@@ -4,10 +4,26 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Premium French Bakery Landing Page</title>
+    <title>Impeccable Cookie Company</title>
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Decode the URL encoded by 404.html for SPA routing on GitHub Pages.
+      // 404.html encodes /page?id=foo as /?p=page&q=id%3Dfoo so that GitHub
+      // serves index.html. This script restores the original URL before React mounts.
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var p = params.get('p');
+        if (p !== null) {
+          var q = params.get('q');
+          var restored = '/' + decodeURIComponent(p) +
+            (q ? '?' + decodeURIComponent(q) : '') +
+            window.location.hash;
+          window.history.replaceState(null, null, restored);
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
