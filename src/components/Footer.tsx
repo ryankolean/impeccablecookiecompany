@@ -1,4 +1,4 @@
-import { Instagram, Mail, Phone, MessageCircle, MapPin } from 'lucide-react';
+import { Instagram, Mail, MessageCircle, MapPin, Star } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -23,13 +23,6 @@ export default function Footer() {
               >
                 <Mail size={18} />
                 <span>hello@impeccablecookies.com</span>
-              </a>
-              <a
-                href="tel:+15551234567"
-                className="flex items-center gap-3 text-[#F5F2ED]/80 hover:text-[#F5F2ED] transition-colors duration-300 font-light"
-              >
-                <Phone size={18} />
-                <span>(555) 123-4567</span>
               </a>
             </div>
           </div>
@@ -63,6 +56,15 @@ export default function Footer() {
                 aria-label="Google Maps"
               >
                 <MapPin size={20} />
+              </a>
+              <a
+                href="https://www.yelp.com/biz/impeccable-cookie-waterford-township"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+                aria-label="Yelp"
+              >
+                <Star size={20} />
               </a>
             </div>
           </div>

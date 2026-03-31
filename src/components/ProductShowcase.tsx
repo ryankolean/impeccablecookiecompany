@@ -4,17 +4,17 @@ const products = [
   {
     name: 'Classic Chocolate Chip',
     description: 'Rich Belgian chocolate chips folded into our signature buttery dough',
-    image: 'https://images.pexels.com/photos/1028714/pexels-photo-1028714.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image: '/20241205_084636_0.jpg',
   },
   {
     name: 'Traditional Snickerdoodle',
     description: 'Cinnamon-sugar perfection with a tender, melt-in-your-mouth texture',
-    image: 'https://images.pexels.com/photos/890577/pexels-photo-890577.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image: '/20241205_084639_0.jpg',
   },
   {
     name: 'Artisan Collection',
     description: 'Seasonal specialties crafted with locally-sourced premium ingredients',
-    image: 'https://images.pexels.com/photos/1307088/pexels-photo-1307088.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image: '/PXL_20241128_140429762.PORTRAIT.ORIGINAL.jpg',
   },
 ];
 

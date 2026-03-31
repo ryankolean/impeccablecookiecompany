@@ -35,7 +35,7 @@ export default function Hero() {
           <div className="relative">
             <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                src="/PXL_20241205_134705256.PORTRAIT.ORIGINAL.jpg"
                 alt="Artisanal cookies"
                 className="w-full h-full object-cover"
               />
