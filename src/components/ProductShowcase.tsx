@@ -24,7 +24,7 @@ export default function ProductShowcase() {
   return (
     <section id="cookies" className="py-24 bg-white">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="reveal text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-light text-[#3D2B1F] mb-4 tracking-tight">
             Our Collection
           </h2>
@@ -37,7 +37,7 @@ export default function ProductShowcase() {
           {products.map((product, index) => (
             <div
               key={index}
-              className="group cursor-pointer"
+              className="reveal group cursor-pointer"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
