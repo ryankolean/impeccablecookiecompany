@@ -18,11 +18,11 @@ export default function Footer() {
             <h4 className="text-lg font-light mb-4 tracking-wide">Contact</h4>
             <div className="space-y-3">
               <a
-                href="mailto:hello@impeccablecookies.com"
+                href="mailto:hello@impeccablecookie.com"
                 className="flex items-center gap-3 text-[#F5F2ED]/80 hover:text-[#F5F2ED] transition-colors duration-300 font-light"
               >
                 <Mail size={18} />
-                <span>hello@impeccablecookies.com</span>
+                <span>hello@impeccablecookie.com</span>
               </a>
             </div>
           </div>
