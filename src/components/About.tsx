@@ -5,7 +5,7 @@ export default function About() {
     <section id="about" className="py-24 bg-[#F5F2ED]">
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="space-y-6">
+          <div className="reveal space-y-6">
             <h2 className="text-4xl md:text-5xl font-light text-[#3D2B1F] tracking-tight">
               Our Story
             </h2>
@@ -26,7 +26,7 @@ export default function About() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="reveal grid grid-cols-2 gap-4">
             <div className="space-y-4">
               <Photo
                 name="chocolate-chip"

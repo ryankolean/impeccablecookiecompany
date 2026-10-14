@@ -34,7 +34,7 @@ export default function Footer() {
                 href="https://www.instagram.com/p/DEbdDohsF_0/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+                className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95"
                 aria-label="Instagram"
               >
                 <Instagram size={20} />
@@ -43,7 +43,7 @@ export default function Footer() {
                 href="https://www.threads.com/@impeccablecookieco"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+                className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95"
                 aria-label="Threads"
               >
                 <MessageCircle size={20} />
@@ -52,7 +52,7 @@ export default function Footer() {
                 href="https://share.google/22K2JXGzhwju16PMH"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+                className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95"
                 aria-label="Google Maps"
               >
                 <MapPin size={20} />
@@ -61,7 +61,7 @@ export default function Footer() {
                 href="https://www.yelp.com/biz/impeccable-cookie-waterford-township"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+                className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95"
                 aria-label="Yelp"
               >
                 <Star size={20} />
