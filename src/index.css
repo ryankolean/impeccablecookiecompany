@@ -39,6 +39,34 @@
   to { opacity: 1; transform: none; }
 }
 
+/* Hero page-load sequence (summit-components/motion/examples/03, in CSS).
+   CSS rather than GSAP: GSAP added 28.5 kB gzip to the critical bundle and
+   cost ~300 ms FCP / ~400 ms LCP on mobile Lighthouse. The photo is the LCP
+   element, so it moves but never fades. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-in {
+    animation: hero-rise var(--dur, .9s) cubic-bezier(.215, .61, .355, 1) var(--delay, 0s) both;
+  }
+  .hero-photo-in {
+    animation: hero-settle .9s cubic-bezier(.215, .61, .355, 1) both;
+  }
+  .hero-glow-in {
+    animation: hero-glow .9s cubic-bezier(.34, 1.56, .64, 1) var(--delay, .15s) both;
+  }
+}
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(var(--rise, 40px)); }
+}
+
+@keyframes hero-settle {
+  from { transform: translateY(32px) scale(.96); }
+}
+
+@keyframes hero-glow {
+  from { transform: scale(0); }
+}
+
 /* Accessibility floor: honour reduced motion everywhere */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
