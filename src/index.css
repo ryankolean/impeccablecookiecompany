@@ -5,11 +5,48 @@
 @tailwind utilities;
 
 @layer base {
+  /* Motion tokens from summit-components/motion/shared/motion.css */
+  :root {
+    --rise-lg: 48px;
+  }
+
   html {
     scroll-behavior: smooth;
   }
 
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  :focus-visible {
+    outline: 2px solid #8B7355;
+    outline-offset: 3px;
+  }
+}
+
+/* Scroll reveal: only browsers with scroll timelines animate, and only when
+   the visitor allows motion. Everywhere else the content is simply there. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+  }
+}
+
+@keyframes reveal-rise {
+  from { opacity: 0; transform: translateY(var(--rise-lg)) scale(.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Accessibility floor: honour reduced motion everywhere */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
   }
 }
