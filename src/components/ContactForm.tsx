@@ -100,7 +100,7 @@ export default function ContactForm() {
 
       setSubmitStatus({
         type: 'success',
-        message: 'Thank you for your order! We have received your request and will contact you shortly via your preferred communication method.',
+        message: 'Thank you! We have your order request and will contact you shortly via your preferred communication method to confirm it. Once it is confirmed, pay by Venmo to @impeccablecookie.',
       });
 
       setFormData({
@@ -141,7 +141,7 @@ export default function ContactForm() {
               Place Your Order
             </h2>
             <p className="text-lg text-[#8B7355] font-light">
-              Share your preferences and we'll be in touch to finalize your order
+              Send your order request and we'll contact you to confirm it. Once it's confirmed, pay by Venmo to @impeccablecookie.
             </p>
           </div>
 

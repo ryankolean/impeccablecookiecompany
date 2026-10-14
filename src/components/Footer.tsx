@@ -1,4 +1,4 @@
-import { Instagram, Mail, MessageCircle, MapPin, Star } from 'lucide-react';
+import { Instagram, Mail, MessageCircle, MapPin, Star, Wallet } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -19,10 +19,19 @@ export default function Footer() {
             <div className="space-y-3">
               <a
                 href="mailto:hello@impeccablecookie.com"
-                className="flex items-center gap-3 text-[#F5F2ED]/80 hover:text-[#F5F2ED] transition-colors duration-300 font-light"
+                className="flex items-center gap-3 text-[#F5F2ED]/80 hover:text-[#F5F2ED] transition-colors duration-300 font-light md:text-sm lg:text-base"
               >
-                <Mail size={18} />
-                <span>hello@impeccablecookie.com</span>
+                <Mail size={18} className="shrink-0" />
+                <span className="min-w-0 break-words">hello<wbr />@impeccablecookie.com</span>
+              </a>
+              <a
+                href="https://venmo.com/u/impeccablecookie"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-[#F5F2ED]/80 hover:text-[#F5F2ED] transition-colors duration-300 font-light md:text-sm lg:text-base"
+              >
+                <Wallet size={18} className="shrink-0" />
+                <span className="min-w-0 break-words">Venmo @impeccablecookie</span>
               </a>
             </div>
           </div>
@@ -31,7 +40,7 @@ export default function Footer() {
             <h4 className="text-lg font-light mb-4 tracking-wide">Follow Us</h4>
             <div className="flex gap-4">
               <a
-                href="https://www.instagram.com/p/DEbdDohsF_0/"
+                href="https://www.instagram.com/impeccablecookieco/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-[#F5F2ED]/10 hover:bg-[#8B7355] flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95"
