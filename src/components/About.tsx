@@ -1,3 +1,5 @@
+import Photo from './Photo';
+
 export default function About() {
   return (
     <section id="about" className="py-24 bg-[#F5F2ED]">
@@ -26,25 +28,29 @@ export default function About() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-4">
-              <img
-                src="/20241205_084636_0.jpg"
+              <Photo
+                name="chocolate-chip"
+                sizes="(min-width: 1536px) 350px, (min-width: 768px) 22vw, calc(50vw - 32px)"
                 alt="Mixing cookie dough"
                 className="w-full h-64 object-cover rounded-2xl shadow-lg"
               />
-              <img
-                src="/20241205_084639_0.jpg"
+              <Photo
+                name="snickerdoodle"
+                sizes="(min-width: 1536px) 350px, (min-width: 768px) 22vw, calc(50vw - 32px)"
                 alt="Premium baking ingredients"
                 className="w-full h-48 object-cover rounded-2xl shadow-lg"
               />
             </div>
             <div className="space-y-4 pt-8">
-              <img
-                src="/PXL_20241119_023700041.MP.jpg"
+              <Photo
+                name="oven"
+                sizes="(min-width: 1536px) 350px, (min-width: 768px) 22vw, calc(50vw - 32px)"
                 alt="Freshly baked cookies in oven"
                 className="w-full h-48 object-cover rounded-2xl shadow-lg"
               />
-              <img
-                src="/PXL_20241128_140429762.PORTRAIT.ORIGINAL.jpg"
+              <Photo
+                name="artisan"
+                sizes="(min-width: 1536px) 350px, (min-width: 768px) 22vw, calc(50vw - 32px)"
                 alt="Artisan cookie baking process"
                 className="w-full h-64 object-cover rounded-2xl shadow-lg"
               />
