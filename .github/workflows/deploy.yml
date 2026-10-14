@@ -27,7 +27,15 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run build
+      - name: Build
+        env:
+          VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
+        run: |
+          if [ -z "$VITE_WEB3FORMS_KEY" ]; then
+            echo "::error::VITE_WEB3FORMS_KEY secret is not set; the order form would ship without a key."
+            exit 1
+          fi
+          npm run build
 
       - uses: actions/upload-pages-artifact@v3
         with:
