@@ -5,6 +5,29 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Impeccable Cookie Company</title>
+    <!-- Font CSS loads without blocking first render (it used to be an @import chained
+         behind the app CSS). display=swap shows the fallback stack until Inter arrives. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" />
+    </noscript>
+    <!-- The hero photo is the LCP element but is rendered by JS; start fetching it now.
+         Must match the srcset/sizes in src/components/Photo.tsx and Hero.tsx. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      imagesrcset="/images/hero-480.avif 480w, /images/hero-960.avif 960w, /images/hero-1440.avif 1440w"
+      imagesizes="(min-width: 1536px) 720px, (min-width: 768px) 45vw, calc(100vw - 48px)"
+      fetchpriority="high"
+    />
   </head>
   <body>
     <div id="root"></div>
