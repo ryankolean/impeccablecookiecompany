@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import Photo from './Photo';
 
 gsap.registerPlugin(useGSAP);
 
@@ -21,7 +22,9 @@ export default function Hero() {
           .from('.hero-title', { y: 40, autoAlpha: 0, duration: 0.9 })
           .from('.hero-lede', { y: 20, autoAlpha: 0, duration: 0.6 }, '-=0.55')
           .from('.hero-cta', { y: 16, autoAlpha: 0, duration: 0.5 }, '-=0.35')
-          .from('.hero-image', { y: 32, scale: 0.96, autoAlpha: 0, duration: 0.9 }, 0)
+          // Transform only: the photo is the LCP element, and fading it from 0
+          // delays LCP until the tween ends (measured +400 ms).
+          .from('.hero-image', { y: 32, scale: 0.96, duration: 0.9 }, 0)
           .from('.hero-glow', { scale: 0, duration: 0.9, ease: 'back.out(1.7)', stagger: 0.12 }, 0.15);
       });
     },
@@ -64,10 +67,12 @@ export default function Hero() {
 
           <div className="relative">
             <div className="hero-image aspect-square rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src="/PXL_20241205_134705256.PORTRAIT.ORIGINAL.jpg"
+              <Photo
+                name="hero"
                 alt="Artisanal cookies"
+                sizes="(min-width: 1536px) 720px, (min-width: 768px) 45vw, calc(100vw - 48px)"
                 className="w-full h-full object-cover"
+                priority
               />
             </div>
             <div className="hero-glow absolute -bottom-6 -right-6 w-48 h-48 bg-[#8B7355]/20 rounded-full blur-3xl -z-10"></div>
