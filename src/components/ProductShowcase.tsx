@@ -1,20 +1,21 @@
 import { useState } from 'react';
+import Photo, { type PhotoName } from './Photo';
 
-const products = [
+const products: { name: string; description: string; image: PhotoName }[] = [
   {
     name: 'Classic Chocolate Chip',
     description: 'Rich Belgian chocolate chips folded into our signature buttery dough',
-    image: '/20241205_084636_0.jpg',
+    image: 'chocolate-chip',
   },
   {
     name: 'Traditional Snickerdoodle',
     description: 'Cinnamon-sugar perfection with a tender, melt-in-your-mouth texture',
-    image: '/20241205_084639_0.jpg',
+    image: 'snickerdoodle',
   },
   {
     name: 'Artisan Collection',
     description: 'Seasonal specialties crafted with locally-sourced premium ingredients',
-    image: '/PXL_20241128_140429762.PORTRAIT.ORIGINAL.jpg',
+    image: 'artisan',
   },
 ];
 
@@ -42,9 +43,10 @@ export default function ProductShowcase() {
               onMouseLeave={() => setHoveredIndex(null)}
             >
               <div className="relative overflow-hidden rounded-2xl shadow-lg">
-                <img
-                  src={product.image}
+                <Photo
+                  name={product.image}
                   alt={product.name}
+                  sizes="(min-width: 1536px) 475px, (min-width: 768px) 30vw, calc(100vw - 48px)"
                   className={`w-full h-80 object-cover transition-transform duration-700 ${
                     hoveredIndex === index ? 'scale-110' : 'scale-100'
                   }`}

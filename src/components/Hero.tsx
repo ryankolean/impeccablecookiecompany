@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react';
+import Photo from './Photo';
 
 export default function Hero() {
   const scrollToContact = () => {
@@ -34,10 +35,12 @@ export default function Hero() {
 
           <div className="relative">
             <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src="/PXL_20241205_134705256.PORTRAIT.ORIGINAL.jpg"
+              <Photo
+                name="hero"
                 alt="Artisanal cookies"
+                sizes="(min-width: 1536px) 720px, (min-width: 768px) 45vw, calc(100vw - 48px)"
                 className="w-full h-full object-cover"
+                priority
               />
             </div>
             <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-[#8B7355]/20 rounded-full blur-3xl -z-10"></div>
