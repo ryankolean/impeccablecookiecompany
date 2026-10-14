@@ -1,9 +1,10 @@
 import { useState, FormEvent } from 'react';
 import { Send } from 'lucide-react';
 
-// Sign up free at https://web3forms.com to get your access key.
-// Paste it here or set it as VITE_WEB3FORMS_KEY in your environment.
-const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY ?? 'YOUR_WEB3FORMS_ACCESS_KEY';
+// Web3Forms access key, injected at build time from the VITE_WEB3FORMS_KEY
+// Actions secret (see .github/workflows/deploy.yml). Set it in .env.local to
+// submit from a dev build.
+const WEB3FORMS_KEY: string = import.meta.env.VITE_WEB3FORMS_KEY ?? '';
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -52,6 +53,15 @@ export default function ContactForm() {
       setSubmitStatus({
         type: 'error',
         message: 'Please fill in all required fields.',
+      });
+      return;
+    }
+
+    if (!WEB3FORMS_KEY) {
+      console.error('Order form is not configured: VITE_WEB3FORMS_KEY is missing from this build.');
+      setSubmitStatus({
+        type: 'error',
+        message: 'Online ordering is temporarily unavailable. Please message us on Instagram to place your order.',
       });
       return;
     }
