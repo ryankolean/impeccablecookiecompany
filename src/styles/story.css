@@ -1,0 +1,56 @@
+/* Story band (#story): butter, type only. Plain CSS only: no @layer, @apply or @tailwind. */
+.story {
+  padding-block: 64px;
+  background: var(--butter);
+}
+
+.story__grid {
+  display: grid;
+  gap: 28px;
+}
+
+/* The ScrollReveal moment: one statement in the display face. */
+.story__statement {
+  max-width: 24em;
+  margin: 0;
+  font-size: clamp(24px, 2.3vw, 32px);
+  font-weight: 500;
+  line-height: 1.32;
+  letter-spacing: -0.01em;
+  color: var(--cocoa);
+  text-wrap: pretty;
+}
+
+.story__signoff {
+  margin-top: 28px;
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--cocoa);
+}
+
+@media (min-width: 700px) {
+  .story {
+    padding-block: 104px;
+  }
+  .story__signoff {
+    font-size: 24px;
+  }
+}
+
+/* The heading column fits "make the perfect cookie." (606px at 56px) on one line, so
+   "cookie." does not end the heading on its own. */
+@media (min-width: 900px) {
+  .story__grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 56px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .story__grid {
+    gap: 80px;
+  }
+}

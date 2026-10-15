@@ -3,14 +3,18 @@
 // reserved before the image arrives.
 
 const PHOTOS = {
-  hero: { widths: [480, 960, 1440], ratio: 1 },
-  'chocolate-chip': { widths: [400, 800, 1200], ratio: 4080 / 3072 },
-  snickerdoodle: { widths: [400, 800, 1200], ratio: 4080 / 3072 },
-  artisan: { widths: [400, 800, 1200], ratio: 4080 / 3072 },
-  oven: { widths: [400, 800, 1200], ratio: 4080 / 3072 },
+  // Exported at 6:7 to match the hero arch, so the rendered width is the frame width.
+  // 720 serves most phones (about 360px wide at 2x), the LCP on mobile.
+  hero: { widths: [480, 720, 960, 1440], ratio: 7 / 6 },
 } as const;
 
-export type PhotoName = keyof typeof PHOTOS;
+// The hero arch's rendered width: about 500px from 1100px up, about 44vw from 900px,
+// and in the single-column layout 92vw until .hero__art's 460px cap (446px of photo)
+// takes over at about 500px. index.html preloads the hero with this exact string as
+// imagesizes; change both together or the preload is wasted.
+export const HERO_SIZES = '(min-width: 1100px) 500px, (min-width: 900px) 44vw, (min-width: 500px) 446px, 92vw';
+
+type PhotoName = keyof typeof PHOTOS;
 
 interface PhotoProps {
   name: PhotoName;

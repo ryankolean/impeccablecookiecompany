@@ -12,23 +12,25 @@ src=${1:?usage: scripts/optimize-images.sh <dir-with-originals>}
 out="$(cd "$(dirname "$0")/.." && pwd)/public/images"
 mkdir -p "$out"
 
-# name | original file | crop | widths
-# crop "square" center-crops to 1:1 (the hero frame is aspect-square with
-# object-cover, so the crop matches what renders); "none" keeps the 3:4 frame.
+# name | original file | crop | widths | focus
+# crop "6:7" cuts the largest 6:7 frame from the original: the hero arch is
+# aspect 6/7, so the frame and the image share an aspect and nothing is
+# cover-cropped (the sizes value in Photo.tsx is the rendered width). focus is
+# the vertical centre of that frame as a fraction of the original height; 0.55
+# keeps the cookie and its salt flakes in the middle of the arch.
+# crop "none" keeps the original frame.
 photos=(
-  "hero|PXL_20241205_134705256.PORTRAIT.ORIGINAL.jpg|square|480 960 1440"
-  "chocolate-chip|20241205_084636_0.jpg|none|400 800 1200"
-  "snickerdoodle|20241205_084639_0.jpg|none|400 800 1200"
-  "artisan|PXL_20241128_140429762.PORTRAIT.ORIGINAL.jpg|none|400 800 1200"
-  "oven|PXL_20241119_023700041.MP.jpg|none|400 800 1200"
+  "hero|PXL_20241205_134705256.PORTRAIT.ORIGINAL.jpg|6:7|480 720 960 1440|0.55"
 )
 
 for row in "${photos[@]}"; do
-  IFS='|' read -r name file crop widths <<<"$row"
+  IFS='|' read -r name file crop widths focus <<<"$row"
   for w in $widths; do
     args=(-auto-orient)
-    if [ "$crop" = square ]; then
-      args+=(-gravity center -crop "%[fx:min(w,h)]x%[fx:min(w,h)]+0+0" +repage)
+    if [ "$crop" = 6:7 ]; then
+      cw="floor(min(w,h*6/7))"
+      ch="floor(min(h,w*7/6))"
+      args+=(-crop "%[fx:$cw]x%[fx:$ch]+%[fx:floor((w-$cw)/2)]+%[fx:floor(max(0,min(h-$ch,${focus:-0.5}*h-$ch/2)))]" +repage)
     fi
     args+=(-resize "${w}x" -strip -colorspace sRGB)
     magick "$src/$file" "${args[@]}" -quality 50 "$out/$name-$w.avif"

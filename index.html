@@ -2,31 +2,80 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Impeccable Cookie Company</title>
-    <link rel="canonical" href="https://impeccablecookie.com/" />
-    <!-- Font CSS loads without blocking first render (it used to be an @import chained
-         behind the app CSS). display=swap shows the fallback stack until Inter arrives. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap"
-      media="print"
-      onload="this.media='all'"
+    <!-- CSP as a meta tag (GitHub Pages cannot send headers), first so it covers everything
+         below. script-src 'unsafe-inline' is for the dev server only: scripts/prerender.mjs
+         swaps it for the sha256 of each inline script in dist/index.html. style-src needs
+         'unsafe-inline' for the prerendered style attributes. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com; form-action 'self'; base-uri 'self'; object-src 'none'"
     />
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" />
-    </noscript>
-    <!-- The hero photo is the LCP element but is rendered by JS; start fetching it now.
-         Must match the srcset/sizes in src/components/Photo.tsx and Hero.tsx. -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Impeccable Cookie Company | The perfect cookie, made in Michigan</title>
+    <meta
+      name="description"
+      content="Chocolate chip and snickerdoodle cookies from a Michigan home kitchen. Send an order request, I confirm with you, then you pay by Venmo. Michigan only."
+    />
+    <link rel="canonical" href="https://impeccablecookie.com/" />
+    <meta name="theme-color" content="#FBF5EA" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Impeccable Cookie Company" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://impeccablecookie.com/" />
+    <meta property="og:title" content="Impeccable Cookie Company | The perfect cookie, made in Michigan" />
+    <meta
+      property="og:description"
+      content="Chocolate chip and snickerdoodle cookies from a Michigan home kitchen. Send an order request, I confirm with you, then you pay by Venmo. Michigan only."
+    />
+    <meta property="og:image" content="https://impeccablecookie.com/og.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="The Impeccable Cookie Company wordmark and the headline &quot;The perfect cookie, made in Michigan&quot; beside a chocolate chip cookie topped with flaky sea salt"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Impeccable Cookie Company | The perfect cookie, made in Michigan" />
+    <meta
+      name="twitter:description"
+      content="Chocolate chip and snickerdoodle cookies from a Michigan home kitchen. Send an order request, I confirm with you, then you pay by Venmo. Michigan only."
+    />
+    <meta name="twitter:image" content="https://impeccablecookie.com/og.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="The Impeccable Cookie Company wordmark and the headline &quot;The perfect cookie, made in Michigan&quot; beside a chocolate chip cookie topped with flaky sea salt"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Bakery",
+        "name": "Impeccable Cookie Company",
+        "url": "https://impeccablecookie.com/",
+        "description": "Chocolate chip and snickerdoodle cookies from a Michigan home kitchen. Send an order request, I confirm with you, then you pay by Venmo. Michigan only.",
+        "image": "https://impeccablecookie.com/og.jpg",
+        "areaServed": { "@type": "State", "name": "Michigan" },
+        "sameAs": ["https://www.instagram.com/impeccablecookieco/"],
+        "servesCuisine": "Cookies"
+      }
+    </script>
+
+    <!-- Only the headline face is preloaded. Figtree loads on first use; the below-the-fold
+         italic is registered after the load event (src/main.tsx). -->
+    <link rel="preload" href="/fonts/newsreader-500.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- The hero photo is the LCP element. Must match the srcset in src/components/Photo.tsx
+         and its HERO_SIZES string exactly, or this download is wasted. -->
     <link
       rel="preload"
       as="image"
       type="image/avif"
-      imagesrcset="/images/hero-480.avif 480w, /images/hero-960.avif 960w, /images/hero-1440.avif 1440w"
-      imagesizes="(min-width: 1536px) 720px, (min-width: 768px) 45vw, calc(100vw - 48px)"
+      imagesrcset="/images/hero-480.avif 480w, /images/hero-720.avif 720w, /images/hero-960.avif 960w, /images/hero-1440.avif 1440w"
+      imagesizes="(min-width: 1100px) 500px, (min-width: 900px) 44vw, (min-width: 500px) 446px, 92vw"
       fetchpriority="high"
     />
   </head>

@@ -1,0 +1,743 @@
+/* How ordering works (#how) and the order request (#order): one chapter.
+   Plain CSS only: no @layer, @apply or @tailwind. Breakpoints match tailwind.config.js
+   (md 700, lg 1100) plus the 900px desktop step. Below 900 the ticket and the order sheet
+   stack in one column (max 720px); from 900 both sit in the right column of the same
+   5fr/7fr grid, so the ticket's perforated edge lines up with the pad's scalloped top.
+
+   The tear: the ticket ends on the band line and its 14px perforated edge hangs into the
+   cocoa band, so its holes and the sheet's matching 14px scallop both show cocoa. The
+   band's top padding (--tear-gap plus the tear) holds that edge, a small gap and the
+   scallop. */
+
+.how,
+.order {
+  --tear: 14px;
+  --tear-gap: 26px;
+  --tail-w: 38px;
+  --tail-h: 70px;
+  --marker: 38px;
+  --ticket-pad: 18px;
+}
+@media (min-width: 700px) {
+  .how,
+  .order {
+    --tear-gap: 34px;
+    --tail-w: 46px;
+    --tail-h: 84px;
+    --marker: 46px;
+    --ticket-pad: 30px;
+  }
+}
+
+/* ---------- Bands and grids ---------- */
+
+.how {
+  background: var(--sugar);
+  padding: 64px 0 0;
+  /* The stamp lands from scale 1.3 near the right edge: clip it sideways only, so the
+     page never scrolls wider while the tear, the tail and the stamp still hang down into
+     the order band. */
+  overflow-x: clip;
+}
+.order {
+  background: var(--cocoa);
+  color: var(--parchment);
+  padding: calc(var(--tear-gap) + var(--tear)) 0 64px;
+}
+@media (min-width: 700px) {
+  .how {
+    padding-top: 104px;
+  }
+  .order {
+    padding-bottom: 104px;
+  }
+}
+
+.how__grid,
+.order__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.how__grid {
+  row-gap: 52px;
+}
+.how__intro {
+  max-width: 34rem;
+}
+.how__lead {
+  margin: 22px 0 0;
+  text-wrap: pretty;
+}
+.how__ticket,
+.order__intro,
+.pad {
+  width: 100%;
+  max-width: 720px;
+}
+
+@media (min-width: 900px) {
+  .how__grid,
+  .order__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: 48px;
+    align-items: start;
+  }
+  .how__ticket,
+  .order__intro,
+  .pad {
+    max-width: none;
+  }
+  /* The left columns keep company with the ticket and the long form as they scroll by
+     (.order__intro sticks in the order band block below). */
+  .how__intro {
+    position: sticky;
+    top: calc(var(--header-h) + 40px);
+  }
+}
+@media (min-width: 1100px) {
+  .how__grid,
+  .order__grid {
+    column-gap: 72px;
+  }
+}
+
+/* ---------- Ticket ---------- */
+
+.ticket {
+  position: relative;
+  z-index: 1; /* the tail and the stamp paint over the order band */
+  padding: 40px var(--ticket-pad) 14px;
+  border-radius: 18px 18px 0 0;
+  background: var(--salt);
+  color: var(--espresso);
+  box-shadow: 0 24px 40px -30px rgba(58, 36, 25, .6);
+}
+@media (min-width: 700px) {
+  .ticket {
+    padding-top: 44px;
+    padding-bottom: 18px;
+  }
+}
+/* Hole punch */
+.ticket::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: var(--sugar);
+  box-shadow: inset 0 1px 2px rgba(58, 36, 25, .35);
+}
+/* Perforated tear edge; the sheet's scalloped top below is its other half. */
+.ticket::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(-1 * var(--tear));
+  height: var(--tear);
+  background: radial-gradient(circle at 10px 14px, transparent 7px, var(--salt) 7.5px) 0 0 / 20px 14px repeat-x;
+}
+
+.ticket__head {
+  margin: 0;
+  padding-bottom: 14px;
+  border-bottom: 1.5px dashed rgba(58, 36, 25, .3);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--caramel-ink);
+}
+
+.ticket__steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ticket__step {
+  display: grid;
+  grid-template-columns: var(--marker) minmax(0, 1fr);
+  column-gap: 14px;
+  padding: 18px 0;
+  border-bottom: 1.5px dashed rgba(58, 36, 25, .22);
+}
+.ticket__step:last-child {
+  border-bottom: 0;
+}
+@media (min-width: 700px) {
+  .ticket__step {
+    column-gap: 18px;
+    padding: 22px 0;
+  }
+}
+
+.ticket__marker {
+  position: relative;
+  width: var(--marker);
+  height: var(--marker);
+}
+.ticket__check {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.ticket__ring {
+  fill: none;
+  stroke: var(--cocoa);
+  stroke-width: 2;
+}
+/* Undrawn at rest (path length is about 28); src/motion/ticket.ts draws it. */
+.ticket__tick {
+  fill: none;
+  stroke: var(--caramel);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 30;
+  stroke-dashoffset: 31;
+}
+.ticket__num {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-bottom: 2px;
+  font-family: 'Newsreader', 'Newsreader Fallback', Georgia, serif;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--cocoa);
+}
+@media (min-width: 700px) {
+  .ticket__num {
+    font-size: 22px;
+  }
+}
+
+.ticket__label {
+  margin: 2px 0 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--caramel-ink);
+}
+.ticket__title {
+  font-size: var(--fs-step);
+  line-height: 1.08;
+}
+.ticket__text {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+@media (min-width: 700px) {
+  .ticket__text {
+    font-size: 16px;
+  }
+}
+.ticket__handle {
+  font-weight: 600;
+  color: var(--cocoa);
+}
+
+/* The right padding keeps the line clear of the stamp's corner: the stamp's width plus
+   its right offset, less the ticket padding (84 + 12 - 18, then 112 + 32 - 30). */
+.ticket__foot {
+  display: grid;
+  grid-template-columns: var(--marker) minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: start;
+  margin: 0;
+  padding: 16px 78px 0 0;
+  border-top: 1.5px dashed rgba(58, 36, 25, .3);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--cocoa);
+}
+@media (min-width: 700px) {
+  .ticket__foot {
+    column-gap: 18px;
+    padding-right: 114px;
+  }
+}
+.ticket__pin {
+  justify-self: center;
+  margin-top: 1px;
+}
+
+/* At rest across the perforation on the lower right, where the eye is when the ticket
+   timeline ends; ticket.ts lands it from scale 1.3 and -24deg at the ticket's bottom 60%.
+   z-index 2 keeps the perforated edge (::after) under its face. */
+.ticket__stamp {
+  position: absolute;
+  z-index: 2;
+  right: 12px;
+  bottom: calc(-1 * (var(--tear) + 34px));
+  width: 84px;
+  height: 84px;
+  transform: rotate(-12deg);
+}
+@media (min-width: 700px) {
+  .ticket__stamp {
+    right: 32px;
+    bottom: calc(-1 * (var(--tear) + 42px));
+    width: 112px;
+    height: 112px;
+  }
+}
+
+/* Hangs from the ticket's bottom edge, under the step markers, across the tear and the
+   gap, and points into the sheet's top padding. Fixed size: no stretched strokes. */
+.ticket__tail {
+  position: absolute;
+  z-index: 1; /* above the perforated edge (::after) */
+  top: calc(100% - 2px);
+  left: var(--ticket-pad);
+  width: var(--tail-w);
+  height: var(--tail-h);
+  overflow: visible;
+  pointer-events: none;
+  fill: none;
+  stroke: var(--caramel);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Order band: intro and pad form one salt sheet below 900 ---------- */
+
+/* The intro's 6px foot keeps the lede link's focus ring clear of the pad, which comes
+   later in the DOM and would paint over the ring's bottom edge. */
+.order__intro {
+  position: relative;
+  padding: 30px 18px 6px;
+  background: var(--salt);
+  color: var(--espresso);
+  --ring: var(--caramel-ink);
+  --eyebrow-ink: var(--caramel-ink);
+}
+.order__title {
+  color: var(--cocoa);
+}
+.order__lede {
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.pad {
+  position: relative;
+  padding: 14px 18px 28px;
+  border-radius: 0 0 22px 22px;
+  background: var(--salt);
+  color: var(--espresso);
+}
+
+/* Scalloped top: the torn-off half of the ticket's perforation. */
+.order__intro::before,
+.pad::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * var(--tear));
+  height: var(--tear);
+  background: radial-gradient(circle at 10px 0, transparent 7px, var(--salt) 7.5px) 0 0 / 20px 14px repeat-x;
+}
+.pad::before {
+  display: none;
+}
+
+@media (min-width: 700px) {
+  .order__intro {
+    padding: 40px 40px 6px;
+  }
+  .order__lede {
+    font-size: var(--fs-body);
+  }
+  .pad {
+    padding: 20px 40px 36px;
+  }
+}
+
+@media (min-width: 900px) {
+  .order__intro {
+    position: sticky;
+    top: calc(var(--header-h) + 40px);
+    padding: 4px 0 0;
+    background: none;
+    color: var(--parchment);
+    --ring: var(--butter);
+    --eyebrow-ink: var(--sugar);
+  }
+  .order__intro::before {
+    display: none;
+  }
+  .order__title {
+    color: var(--butter);
+  }
+  .order__lede {
+    margin-top: 22px;
+    color: var(--cream-muted);
+  }
+  .order__lede .link {
+    color: var(--butter);
+  }
+  .pad {
+    padding: 32px;
+  }
+  .pad::before {
+    display: block;
+  }
+}
+@media (min-width: 1100px) {
+  .pad {
+    padding: 40px;
+  }
+}
+
+/* ---------- Form ---------- */
+
+.order-form {
+  container: order-form / inline-size;
+}
+
+.order-form__required {
+  margin: 0 0 22px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.order-form__contact,
+.order-form__flavors {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+@container order-form (min-width: 420px) {
+  .order-form__contact,
+  .order-form__flavors {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .order-form__contact .field--name {
+    grid-column: 1 / -1;
+  }
+}
+@container order-form (min-width: 580px) {
+  .order-form__contact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .order-form__contact .field--name {
+    grid-column: auto;
+  }
+}
+
+.order-form__group {
+  min-width: 0;
+  margin: 26px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.field {
+  min-width: 0;
+}
+.field__label {
+  display: block;
+  margin: 0 0 8px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--espresso);
+}
+.field__label--sub {
+  font-weight: 500;
+}
+
+.field__control {
+  display: block;
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  border: 1.5px solid var(--field);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--cocoa);
+  transition: border-color 120ms ease;
+}
+.field__control::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+.field__control:hover,
+.field__control:focus {
+  border-color: var(--cocoa);
+}
+.field__control[aria-invalid='true'] {
+  border-color: var(--error);
+}
+/* Error red and the field brown read alike at 1.5px: an inset hairline doubles the edge
+   without moving the layout. */
+.field__control[aria-invalid='true'],
+.choices--invalid .choice {
+  box-shadow: inset 0 0 0 1px var(--error);
+}
+.field__control--select {
+  padding-right: 44px;
+  appearance: none;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%233A2419' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;
+  cursor: pointer;
+}
+/* Forced colors keep the cocoa chevron image, which vanishes on a dark Canvas: use the
+   native arrow in system colors instead. */
+@media (forced-colors: active) {
+  .field__control--select {
+    appearance: auto;
+    background-image: none;
+    padding-right: 16px;
+  }
+}
+/* overflow-y: auto, so Lenis (allowNestedScroll) sees a long note as scrollable in
+   Firefox too, where a textarea's overflow otherwise computes to visible. */
+.field__control--area {
+  height: auto;
+  min-height: 112px;
+  padding: 14px 16px;
+  overflow-y: auto;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.field__error {
+  margin: 8px 0 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--error);
+}
+
+.order-form__note {
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* Radio pills */
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 20px 10px 16px;
+  border: 1.5px solid var(--field);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 16px;
+  line-height: 1.3;
+  color: var(--espresso);
+  cursor: pointer;
+  transition: background-color var(--dur-micro) ease, border-color var(--dur-micro) ease;
+}
+.choice:hover {
+  border-color: var(--cocoa);
+}
+.choice:has(.choice__input:checked) {
+  border-color: var(--cocoa);
+  background: var(--butter);
+}
+.choices--invalid .choice {
+  border-color: var(--error);
+}
+.choice__input,
+.check-row__input {
+  flex: none;
+  margin: 0;
+  accent-color: var(--cocoa);
+  cursor: pointer;
+}
+.choice__input {
+  width: 18px;
+  height: 18px;
+}
+
+/* Michigan confirmation */
+.check-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--espresso);
+  cursor: pointer;
+}
+.check-row__input {
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+}
+.check-row--invalid .check-row__input {
+  outline: 2px solid var(--error);
+  outline-offset: 2px;
+}
+.check-row--invalid .check-row__input:focus-visible {
+  outline-color: var(--ring);
+  outline-offset: 3px;
+}
+
+/* Validation summary and send errors (role="alert"; empty when quiet). */
+.order-form__alert {
+  margin-top: 26px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--error);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--error);
+}
+.order-form__alert:empty {
+  display: none;
+}
+.order-form__alert p {
+  margin: 0;
+}
+
+.order-form__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 22px;
+  margin-top: 30px;
+}
+.order-form__submit {
+  width: 100%;
+}
+/* Disabled until React owns the form (and for good without JS), and while sending:
+   only the sending state shows the progress cursor. */
+.order-form__submit:disabled {
+  cursor: default;
+  background: var(--cocoa-deep);
+}
+/* Not yet usable (no JS, or still loading): read as inactive, not as a dead button. */
+.order-form__submit:disabled:not([data-sending]) {
+  background: transparent;
+  border-color: var(--field);
+  color: var(--muted);
+}
+.order-form__submit:disabled:not([data-sending]) .pill__arrow {
+  display: none;
+}
+.order-form__submit[data-sending] {
+  cursor: progress;
+}
+.order-form__fine {
+  flex: 1 1 15em;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+@container order-form (min-width: 420px) {
+  .order-form__submit {
+    width: auto;
+  }
+}
+/* The "still loading" note: hidden for the first 4s (hydration normally removes it well
+   before), and never shown next to the no-JS notice. Browsers that cannot animate
+   display (Firefox) keep its space while it is hidden. */
+.order-form__stalled {
+  animation: order-stalled 0s 4s backwards;
+}
+@keyframes order-stalled {
+  from { display: none; visibility: hidden; }
+}
+.order-form__foot:has(noscript > p) .order-form__stalled {
+  display: none;
+}
+
+/* Statutory home-kitchen sentence: 15px, muted on salt (7.64:1). */
+.order-form__notice {
+  margin: 20px 0 0;
+  padding-top: 18px;
+  border-top: 1.5px dashed rgba(58, 36, 25, .22);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---------- Success panel (replaces the form) ---------- */
+
+.order-success {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  border-radius: 12px;
+}
+.order-success__icon {
+  display: block;
+  width: 52px;
+  height: 52px;
+}
+.order-success__ring {
+  fill: none;
+  stroke: var(--cocoa);
+  stroke-width: 2;
+}
+.order-success__tick {
+  fill: none;
+  stroke: var(--caramel);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.order-success__text {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--espresso);
+}
+.order-success__title {
+  display: block;
+  margin-bottom: 10px;
+  font-family: 'Newsreader', 'Newsreader Fallback', Georgia, serif;
+  font-size: var(--fs-step);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--cocoa);
+}
+.order-success__pay {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+  color: var(--cocoa);
+}

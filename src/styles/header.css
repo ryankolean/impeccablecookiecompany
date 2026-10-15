@@ -1,0 +1,303 @@
+/* Site header: fixed, solid parchment (no backdrop-filter), exactly var(--header-h)
+   tall with its 1px hairline inside (border-box). The height never changes on scroll;
+   --header-h is in rem, so it grows with large text. Below 900px: wordmark, Order pill,
+   Menu button. From 900px: wordmark, nav, Instagram, Order pill. The large text steps
+   at the end of this file keep the bar's row inside the screen. */
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  height: var(--header-h);
+  background: var(--parchment);
+  border-bottom: 1px solid rgb(58 36 25 / .12); /* cocoa at 12% */
+}
+
+.site-header__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+  container: site-header / inline-size;
+}
+
+/* With large text the wordmark's second line wraps rather than push the row past the
+   screen; at the normal size the row always fits. Scoped: index.css loads after this. */
+.site-header .wordmark__sub {
+  white-space: normal;
+}
+
+.site-nav,
+.site-header__instagram {
+  display: none;
+}
+
+.site-nav__list {
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav__link {
+  display: inline-block;
+  padding: 10px 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--espresso);
+  text-decoration: none;
+  background: linear-gradient(var(--caramel), var(--caramel)) 0 100% / 0 2px no-repeat;
+  transition: background-size var(--dur-micro) var(--ease-out);
+}
+.site-nav__link:hover {
+  background-size: 100% 2px;
+}
+
+.site-header__instagram {
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  color: var(--cocoa);
+  transition: background-color var(--dur-micro) ease;
+}
+.site-header__instagram:hover {
+  background: var(--butter);
+}
+
+/* Order pill. The long label is visually hidden under 700px but stays the accessible
+   name, so the name never changes ("Order" is aria-hidden). */
+.site-header__order {
+  position: relative;
+  margin-left: auto;
+}
+.site-header__order-long {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Inner ring once the hero CTA has gone (butter on cocoa, 11.70:1). Colour change only. */
+.site-header__order::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 2px solid transparent;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: border-color var(--dur-micro) ease;
+}
+.site-header__order[data-ring]::after {
+  border-color: var(--butter);
+}
+
+/* At the order form: "you are here", butter fill with cocoa text (11.70:1). Scoped so
+   it also beats .pill--primary:hover. */
+.site-header .site-header__order[aria-current="location"],
+.site-header .site-header__order[aria-current="location"]:hover {
+  background: var(--butter);
+  color: var(--cocoa);
+  border-color: var(--cocoa);
+}
+.site-header .site-header__order[aria-current="location"]::after {
+  border-color: transparent;
+}
+
+.menu-button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1.5px solid var(--cocoa);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cocoa);
+  cursor: pointer;
+  transition: background-color var(--dur-micro) ease;
+}
+.menu-button:hover,
+.menu-button[aria-expanded="true"] {
+  background: var(--butter);
+}
+/* Without JS the menu cannot open; the Order pill and the page itself still work. */
+@media (scripting: none) {
+  .menu-button {
+    display: none;
+  }
+}
+
+/* The open menu leads with its own full-width "Request an order": no second pill above
+   it. visibility keeps the bar from reflowing. */
+.site-header:has(.menu-button[aria-expanded="true"]) .site-header__order {
+  visibility: hidden;
+}
+
+/* Mobile menu: full screen under the bar, parchment. */
+.mobile-menu {
+  position: fixed;
+  inset: var(--header-h) 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--parchment);
+}
+.mobile-menu[hidden] {
+  display: none;
+}
+
+.mobile-menu__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-top: 28px;
+  padding-bottom: 40px;
+}
+
+.mobile-menu__order {
+  width: 100%;
+}
+
+.mobile-menu__list {
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgb(58 36 25 / .12);
+}
+.mobile-menu__list li {
+  border-bottom: 1px solid rgb(58 36 25 / .12);
+}
+
+.mobile-menu__link {
+  display: flex;
+  align-items: center;
+  min-height: 68px;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--cocoa);
+  text-decoration: none;
+}
+
+.mobile-menu__instagram {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cocoa);
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-menu:not([hidden]) {
+    animation: site-menu-in 220ms var(--ease-out) both;
+  }
+}
+@keyframes site-menu-in {
+  from { opacity: 0; transform: translateY(-8px); }
+}
+
+/* Narrow phones (320 to 359px): a tighter bar, so the Menu button keeps its gutter. */
+@media (max-width: 359px) {
+  .site-header__bar {
+    gap: 6px;
+  }
+  .site-header .pill--header {
+    padding: 0 14px;
+  }
+  .site-header .wordmark__main {
+    font-size: 21px;
+  }
+  .site-header .wordmark__sub {
+    letter-spacing: .16em;
+  }
+}
+
+@media (min-width: 700px) {
+  .site-header__order-long {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+  .site-header__order-short {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .site-header__bar {
+    gap: 20px;
+  }
+  .site-nav {
+    display: block;
+    margin-left: auto;
+  }
+  .site-header__instagram {
+    display: inline-grid;
+  }
+  .site-header__order {
+    margin-left: 0;
+  }
+  /* The panel itself follows [hidden]: Header.tsx closes it when the screen widens past
+     900, and the large text step below can still open it here. */
+  .menu-button {
+    display: none;
+  }
+}
+
+@media (min-width: 1100px) {
+  .site-header__bar {
+    gap: 28px;
+  }
+  .site-nav__list {
+    gap: 30px;
+  }
+}
+
+/* Large text (text-only zoom, a bigger default font size). The bar is a size container
+   queried in its own em, which grow with the text while the screen does not, so these
+   steps match only once the row no longer fits; at the normal size none of them can
+   (the bar is at least 17.5em wide from 320px, 35.5em from 700 and 47.3em from 900).
+   Measured row widths at 1x and 2x text: below 700, 18.9em and 14.7em; from 700,
+   23.1em and 19.1em; from 900 with the nav and Instagram, 45.4em and 37.8em.
+   - Every width: the Order pill drops out; the menu leads with the same link.
+   - From 900: the nav and Instagram fold into the menu, as on phones. */
+@container site-header (max-width: 17em) {
+  .site-header .site-header__order {
+    display: none;
+  }
+}
+@media (min-width: 700px) {
+  @container site-header (max-width: 26em) {
+    .site-header .site-header__order {
+      display: none;
+    }
+  }
+}
+@media (min-width: 900px) {
+  @container site-header (max-width: 46em) {
+    .site-nav,
+    .site-header__instagram {
+      display: none;
+    }
+    .site-header__order {
+      margin-left: auto;
+    }
+    .menu-button {
+      display: inline-grid;
+    }
+  }
+}

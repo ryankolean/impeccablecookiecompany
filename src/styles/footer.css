@@ -1,0 +1,68 @@
+/* footer section styles. Plain CSS only: no @layer, @apply or @tailwind. */
+
+/* Text pairs on cocoa-deep #24160F: butter 14.15:1, sugar 11.62:1, cream-muted 10.25:1. */
+.site-footer {
+  padding: 72px 0 40px;
+  background: var(--cocoa-deep);
+  color: var(--cream-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* minmax(0, ...) lets a column shrink below its longest word, so the email
+   wraps at its <wbr> instead of pushing the page wider. */
+.site-footer__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 36px;
+}
+
+/* Two columns, brand and contact, once both fit side by side. */
+@media (min-width: 900px) {
+  .site-footer__grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 48px;
+  }
+}
+
+/* Statutory home-kitchen sentence: 15px, butter for the strongest contrast. */
+.site-footer__notice {
+  max-width: 30em;
+  margin-top: 22px;
+  color: var(--butter);
+  text-wrap: pretty;
+}
+
+.site-footer__note {
+  max-width: 30em;
+  margin-top: 10px;
+}
+
+.site-footer__list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+
+/* inline-block + 3px padding keeps each link at least 24px tall. With enlarged text
+   a handle or the email can still break inside a narrow column. */
+.site-footer__link {
+  display: inline-block;
+  padding-block: 3px;
+  overflow-wrap: anywhere;
+  color: var(--butter);
+  text-decoration: underline;
+  text-decoration-color: rgba(245, 230, 188, .45);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur-micro) ease;
+}
+.site-footer__link:hover {
+  text-decoration-color: var(--butter);
+}
+
+.site-footer__copy {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(245, 230, 188, .18);
+}
