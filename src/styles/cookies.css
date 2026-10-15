@@ -1,0 +1,239 @@
+/* Cookies band (#cookies): parchment, two salt recipe cards. Plain CSS only: no @layer,
+   @apply or @tailwind. Phones get compact horizontal cards (art beside the title, the
+   allergen line and a full-width pill underneath) so the band stays short. Tablets get
+   two upright cards side by side, and from 1100 the art moves beside the text again. */
+.cookies {
+  padding-block: 64px;
+  background: var(--parchment);
+}
+
+.cookies__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.cookies__title {
+  text-wrap: balance;
+}
+
+.cookies__note {
+  max-width: 25em;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.cookies__cards {
+  display: grid;
+  gap: 16px;
+}
+
+.cookie-card {
+  display: grid;
+  grid-template-columns: 38% 1fr;
+  grid-template-areas:
+    "art body"
+    "foot foot";
+  align-items: center;
+  gap: 14px 16px;
+  height: 100%;
+  padding: 10px;
+  border: 1px solid rgba(58, 36, 25, .1);
+  border-radius: 18px;
+  background: var(--salt);
+}
+
+.cookie-card__art {
+  grid-area: art;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.cookie-card__art svg {
+  display: block;
+  width: 90%;
+  height: auto;
+}
+/* Grounds: flaky-salt flecks on brown sugar, cinnamon speckles on butter. */
+.cookie-card--chocolate-chip .cookie-card__art {
+  background:
+    radial-gradient(rgba(255, 253, 248, .85) 1.2px, transparent 1.9px) 0 0 / 16px 16px,
+    radial-gradient(rgba(58, 36, 25, .1) 1px, transparent 1.6px) 8px 7px / 22px 20px,
+    var(--sugar);
+}
+.cookie-card--snickerdoodle .cookie-card__art {
+  background:
+    radial-gradient(rgba(140, 68, 22, .3) 1.1px, transparent 1.7px) 0 0 / 15px 15px,
+    radial-gradient(rgba(181, 101, 42, .22) 1px, transparent 1.6px) 7px 9px / 21px 19px,
+    var(--butter);
+}
+
+.cookie-card__body {
+  grid-area: body;
+  min-width: 0;
+}
+
+.cookie-card__num {
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--caramel-ink);
+}
+
+/* "Snickerdoodle" is one long word: let it break rather than overflow the card under
+   WCAG text spacing on narrow phones. */
+.cookie-card__title {
+  font-size: 25px;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.cookie-card__desc {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.cookie-card__foot {
+  grid-area: foot;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cookie-card__allergens {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* Scoped: index.css (the .pill primitive) loads after this file. With large text the
+   label wraps inside the pill instead of pushing the card past the screen edge; at the
+   normal size it always fits on one line. */
+.cookie-card .cookie-card__cta {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 20px;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+}
+
+/* Lift and turn, transform only (never box-shadow, which repaints). Under 260ms. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .cookie-card,
+  .cookie-card__art svg {
+    transition: transform 240ms var(--ease-out);
+  }
+  .cookie-card:hover {
+    transform: translateY(-4px);
+  }
+  .cookie-card:hover .cookie-card__art svg {
+    transform: rotate(-6deg) scale(1.04);
+  }
+}
+
+@media (min-width: 700px) {
+  .cookies {
+    padding-block: 104px;
+  }
+  .cookies__cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .cookie-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "art"
+      "body"
+      "foot";
+    align-items: start;
+    gap: 0;
+    padding: 14px;
+    border-radius: 22px;
+  }
+  .cookie-card__art {
+    aspect-ratio: 4 / 3;
+    border-radius: 14px;
+  }
+  .cookie-card__art svg {
+    width: 80%;
+  }
+  .cookie-card__body {
+    padding: 22px 8px 0;
+  }
+  .cookie-card__num {
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+  .cookie-card__title {
+    font-size: clamp(26px, 2.4vw, 34px);
+  }
+  .cookie-card__desc {
+    margin-top: 12px;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  /* Bottom of the card, so the allergen lines and pills line up across both cards. */
+  .cookie-card__foot {
+    align-self: end;
+    justify-items: start;
+    gap: 16px;
+    padding: 16px 8px 8px;
+  }
+  .cookie-card .cookie-card__cta {
+    width: auto;
+    min-height: 52px;
+  }
+}
+
+/* From 1100 the art sits beside the text: the body hangs from the top and the foot from
+   the bottom, so the labels, titles and pills line up across both cards. Until 1280 the
+   art column narrows so the pill keeps its one-line label inside the card. */
+@media (min-width: 1100px) {
+  .cookies__head {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+    margin-bottom: 48px;
+  }
+  .cookie-card {
+    grid-template-columns: 42% 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "art body"
+      "art foot";
+    column-gap: 22px;
+  }
+  .cookie-card__art {
+    align-self: center;
+    aspect-ratio: 4 / 5;
+  }
+  .cookie-card__body {
+    padding: 20px 0 0;
+  }
+  .cookie-card__foot {
+    padding: 18px 0 10px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .cookie-card {
+    grid-template-columns: 46% 1fr;
+    column-gap: 28px;
+  }
+}

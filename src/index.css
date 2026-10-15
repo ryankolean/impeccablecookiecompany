@@ -1,70 +1,475 @@
+/* Self-hosted latin subsets from Google Fonts (OFL, see public/fonts/OFL.txt).
+   Only Newsreader 500 is preloaded (index.html). Newsreader italic 400 sets only
+   below-the-fold accent words, so it has no @font-face here: src/main.tsx registers it
+   after the load event, keeping it out of the first-paint fetch set. */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/newsreader-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/figtree-variable.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Size-adjusted local fallbacks, so the swap barely moves the layout.
+   size-adjust = average advance of the web font / the fallback over the site's own copy;
+   ascent/descent = the web font's hhea metrics / size-adjust. Measured with fontTools from
+   the woff2 files in public/fonts and macOS Georgia/Arial:
+     Newsreader 500 (opsz 72)  vs Georgia         0.4586 / 0.4397 em, hhea 0.735 / 0.265
+     Newsreader italic 400     vs Georgia Italic  0.4215 / 0.4639 em, hhea 0.735 / 0.265
+     Figtree 400               vs Arial           0.4448 / 0.4428 em, hhea 0.950 / 0.250 */
+@font-face {
+  font-family: 'Newsreader Fallback';
+  font-style: normal;
+  src: local('Georgia');
+  size-adjust: 104.29%;
+  ascent-override: 70.48%;
+  descent-override: 25.41%;
+  line-gap-override: 0%;
+}
+/* The hero H1 is the only roman Newsreader above the fold, so it gets a fallback of its
+   own, sized to its first line ("The perfect cookie," at 46px: 384.0px in Newsreader,
+   378.8px in Georgia at 104.29%). It then wraps the same way before and after the swap
+   at every phone width (hero.css). */
+@font-face {
+  font-family: 'Newsreader Hero Fallback';
+  font-style: normal;
+  src: local('Georgia');
+  size-adjust: 105.26%;
+  ascent-override: 69.83%;
+  descent-override: 25.18%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Newsreader Fallback';
+  font-style: italic;
+  src: local('Georgia Italic'), local('Georgia-Italic');
+  size-adjust: 90.85%;
+  ascent-override: 80.9%;
+  descent-override: 29.17%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial'), local('ArialMT');
+  size-adjust: 100.45%;
+  ascent-override: 94.57%;
+  descent-override: 24.89%;
+  line-gap-override: 0%;
+}
+
 @tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 @layer base {
-  /* Motion tokens from summit-components/motion/shared/motion.css */
   :root {
+    --parchment: theme('colors.parchment');
+    --butter: theme('colors.butter');
+    --sugar: theme('colors.sugar');
+    --caramel: theme('colors.caramel');
+    --caramel-ink: theme('colors.caramel-ink');
+    --cocoa: theme('colors.cocoa');
+    --cocoa-deep: theme('colors.cocoa-deep');
+    --espresso: theme('colors.espresso');
+    --muted: theme('colors.muted');
+    --salt: theme('colors.salt');
+    --field: theme('colors.field');
+    --cream-muted: theme('colors.cream-muted');
+    --error: theme('colors.error');
+
+    /* Fixed header height, 1px hairline included. html scroll-padding-top, native
+       fragment jumps, scrollIntoView and Lenis scrollTo all read it. In rem (60px and
+       72px at the default size) so the header grows with text-only zoom instead of
+       clipping the wordmark and nav. */
+    --header-h: 3.75rem;
+    --gutter: 20px;
+    --fs-body: 16px;
+    --fs-lede: 18px;
+    --fs-step: 24px;
+
     --rise-lg: 48px;
+    --ease-out: cubic-bezier(.22, 1, .36, 1);
+    --ease-hero: cubic-bezier(.215, .61, .355, 1);
+    --dur-micro: 180ms;
   }
 
+  @media (min-width: 700px) {
+    :root {
+      --gutter: 48px;
+      --fs-body: 17px;
+      --fs-lede: 20px;
+      --fs-step: 27px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    :root {
+      --header-h: 4.5rem;
+    }
+  }
+
+  /* No scroll-behavior: smooth. Lenis (deferred chunk) owns smooth scrolling, and
+     MotionProvider's scrollToSection passes behavior to scrollIntoView itself. */
   html {
-    scroll-behavior: smooth;
+    scroll-padding-top: var(--header-h);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  html.scroll-locked {
+    overflow: hidden;
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--parchment);
+    color: var(--espresso);
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+    /* Only a word wider than its line breaks (a headline word or an @handle with large
+       text on a narrow phone), so nothing is clipped at the screen edge. At the normal
+       size no word comes close. */
+    overflow-wrap: break-word;
   }
 
+  h1, h2, h3 {
+    font-family: theme('fontFamily.serif');
+    font-weight: 500;
+    color: var(--cocoa);
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  h1 {
+    font-size: clamp(46px, 5.6vw, 82px);
+    line-height: .98;
+    letter-spacing: -0.025em;
+  }
+  h2 {
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1.02;
+  }
+  h3 {
+    font-size: clamp(26px, 2.4vw, 34px);
+    line-height: 1.08;
+  }
+  :is(h1, h2, h3) em {
+    font-style: italic;
+    font-weight: 400;
+  }
+  /* Keep the italic accent phrase on one line when it fits. inline-block, not nowrap:
+     with large text a phrase wider than the column wraps inside itself instead of
+     running off the screen. */
+  #story-title em,
+  #how-title em {
+    display: inline-block;
+  }
+
+  /* Per-surface tokens. :root is a light surface; .surface-dark goes on cocoa and
+     cocoa-deep bands, and anything light nested inside one (the order pad) resets
+     with .surface-light. */
+  :root,
+  .surface-light {
+    --ring: var(--caramel-ink);
+    --eyebrow-ink: var(--caramel-ink);
+  }
+  .surface-dark {
+    --ring: var(--butter);
+    --eyebrow-ink: var(--sugar);
+  }
+
+  /* A real outline (never box-shadow only) so forced-colors mode keeps it. */
   :focus-visible {
-    outline: 2px solid #8B7355;
+    outline: 2px solid var(--ring);
     outline-offset: 3px;
   }
-}
-
-/* Scroll reveal: only browsers with scroll timelines animate, and only when
-   the visitor allows motion. Everywhere else the content is simply there. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .reveal {
-      animation: reveal-rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 30%;
-    }
+  /* main is a skip-link target, not a control: the jump itself is the cue. */
+  #main:focus {
+    outline: none;
+  }
+  /* Focus scrolling lands a control 8px below the header, so the ring's top edge shows.
+     Controls only: section jumps still land exactly under the header. */
+  :where(a, button, input, select, textarea) {
+    scroll-margin-top: 8px;
   }
 }
 
-@keyframes reveal-rise {
-  from { opacity: 0; transform: translateY(var(--rise-lg)) scale(.97); }
-  to { opacity: 1; transform: none; }
+@tailwind components;
+
+/* Primitives. Plain CSS, not @layer components, so Tailwind's content scan never purges
+   them. Placed before utilities so a utility class still wins over them; section CSS
+   loads earlier, so override with a scoped selector. */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: var(--cocoa);
+  color: var(--butter);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: none;
 }
 
-/* Hero page-load sequence (summit-components/motion/examples/03, in CSS).
-   CSS rather than GSAP: GSAP added 28.5 kB gzip to the critical bundle and
-   cost ~300 ms FCP / ~400 ms LCP on mobile Lighthouse. The photo is the LCP
-   element, so it moves but never fades. */
+.eyebrow {
+  margin: 0 0 18px;
+  font-family: theme('fontFamily.sans');
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--eyebrow-ink);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 26px;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font-family: theme('fontFamily.sans');
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .01em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--dur-micro) ease, color var(--dur-micro) ease, border-color var(--dur-micro) ease;
+}
+.pill--header {
+  min-height: 44px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+.pill--primary {
+  background: var(--cocoa);
+  color: var(--butter);
+}
+.pill--primary:hover {
+  background: var(--cocoa-deep);
+}
+.pill__arrow {
+  flex: none;
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+.pill:hover .pill__arrow {
+  transform: translateX(4px);
+}
+
+/* Text link: caramel underline (graphic only), shrinks on hover. */
+.link {
+  padding-bottom: 3px;
+  color: var(--cocoa);
+  font-weight: 600;
+  text-decoration: none;
+  background: linear-gradient(var(--caramel), var(--caramel)) 0 100% / 100% 2px no-repeat;
+  transition: background-size var(--dur-micro) var(--ease-out);
+}
+.link:hover {
+  background-size: 40% 2px;
+}
+
+/* Hand-drawn caramel swash under one headline word. */
+.swash {
+  position: relative;
+  white-space: nowrap;
+}
+.swash::after {
+  content: "";
+  position: absolute;
+  left: -2%;
+  right: -3%;
+  bottom: .02em;
+  height: .16em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 16' preserveAspectRatio='none'%3E%3Cpath d='M3 11 C 40 3, 84 4, 114 8 S 172 14, 197 4' fill='none' stroke='%23B5652A' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+  pointer-events: none;
+}
+
+/* Wordmark: "Impeccable" is inline SVG paths (Newsreader italic outlines), so the
+   header never waits on the italic font file. */
+.wordmark {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: var(--cocoa);
+  text-decoration: none;
+  line-height: 1;
+}
+.wordmark__main {
+  display: block;
+  width: 4.52em;
+  height: .975em;
+  font-size: 25px;
+  overflow: visible;
+}
+.wordmark__sub {
+  margin-top: 4px;
+  padding-left: 2px;
+  font-family: theme('fontFamily.sans');
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--caramel-ink);
+  white-space: nowrap;
+}
+.wordmark--reversed {
+  color: var(--butter);
+}
+.wordmark--reversed .wordmark__sub {
+  color: var(--sugar);
+}
+@media (min-width: 700px) {
+  .wordmark__main {
+    font-size: 30px;
+  }
+  .wordmark__sub {
+    margin-top: 5px;
+    letter-spacing: .3em;
+  }
+}
+
+/* Stamp roundel. Ink stays caramel-ink; the face matches the surface it sits on. */
+.stamp {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.stamp__face {
+  fill: var(--parchment);
+  stroke: var(--caramel-ink);
+}
+.stamp--salt .stamp__face {
+  fill: var(--salt);
+}
+.stamp__ring {
+  fill: none;
+  stroke: var(--caramel-ink);
+}
+.stamp__text {
+  fill: var(--caramel-ink);
+  font-family: theme('fontFamily.sans');
+  font-weight: 600;
+}
+
+/* Cookie mark (favicon): cocoa disc with a bite, butter italic "i". */
+.cookie-mark__disc {
+  fill: var(--cocoa);
+}
+.cookie-mark__i {
+  fill: var(--butter);
+}
+
+@tailwind utilities;
+
+/* ---------- Motion (CSS first; GSAP and Lenis arrive later in src/motion/runtime.ts) ---------- */
+
+/* Hero load. Add .hero-in with style="--i: n" for an 80ms stagger. The H1 and lede add
+   .no-fade (either may be the mobile LCP, so transform only). The hero photo is the
+   LCP element: .hero-photo-in moves it but never touches opacity. .stamp-press goes on
+   the stamp's wrapper; the exit rules below go on different, nested elements because
+   one element can only run one animation. */
 @media (prefers-reduced-motion: no-preference) {
   .hero-in {
-    animation: hero-rise var(--dur, .9s) cubic-bezier(.215, .61, .355, 1) var(--delay, 0s) both;
+    animation: hero-rise 900ms var(--ease-hero) both;
+    animation-delay: calc(var(--i, 0) * 80ms);
+  }
+  .hero-in.no-fade {
+    animation-name: hero-rise-only;
   }
   .hero-photo-in {
-    animation: hero-settle .9s cubic-bezier(.215, .61, .355, 1) both;
+    animation: hero-settle 1100ms var(--ease-hero) both;
   }
-  .hero-glow-in {
-    animation: hero-glow .9s cubic-bezier(.34, 1.56, .64, 1) var(--delay, .15s) both;
+  .stamp-press {
+    animation: stamp-press 600ms var(--ease-hero) 520ms both;
   }
 }
 
 @keyframes hero-rise {
-  from { opacity: 0; transform: translateY(var(--rise, 40px)); }
+  from { opacity: 0; transform: translateY(24px); }
 }
-
+@keyframes hero-rise-only {
+  from { transform: translateY(24px); }
+}
 @keyframes hero-settle {
-  from { transform: translateY(32px) scale(.96); }
+  from { transform: translateY(14px) scale(1.03); }
+}
+@keyframes stamp-press {
+  from { opacity: 0; transform: rotate(-28deg) scale(.86); }
 }
 
-@keyframes hero-glow {
-  from { transform: scale(0); }
+/* Scroll-driven rules. The guard also tests animation-range: Firefox Nightly has
+   animation-timeline without it and would run these across the whole view range.
+   runtime.ts uses the same test before it falls back to ScrollTrigger.
+   animation must come before animation-timeline (the shorthand resets it). */
+@supports (animation-timeline: view()) and (animation-range: entry 0% cover 30%) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Hero exit: put .hero-exit-turn on the stamp <svg> (never an SVG <g>) and
+       .hero-exit-shrink on the photo's outer wrapper. Transform only. */
+    .hero-exit-turn {
+      animation: hero-exit-turn linear both;
+      animation-timeline: view();
+      /* From mid-screen, so the turn is seen before the stamp slides under the header. */
+      animation-range: cover 50% cover 100%;
+    }
+    .hero-exit-shrink {
+      animation: hero-exit-shrink linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+
+    /* Section blocks below the hero. One driver per element: never combine .reveal
+       with [data-split], [data-scroll-reveal] or a GSAP tween on the same node.
+       The range ends when the block is fully on screen (the spec's "cover 30%" ended
+       later for short blocks, which could rest in view half faded), and the fade is
+       done at 60% of it so a tall card's visible part is never left faint. */
+    .reveal {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+@keyframes hero-exit-turn {
+  to { transform: rotate(120deg); }
+}
+@keyframes hero-exit-shrink {
+  to { transform: scale(.94); }
+}
+@keyframes reveal-rise {
+  from { opacity: 0; transform: translateY(var(--rise-lg)); }
+  60% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+
+/* Order success check: put .success-check on a <path pathLength="1">. Not gated: under
+   reduced motion the global block below shortens it, so the check still ends drawn. */
+.success-check {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: success-check 280ms var(--ease-out) forwards;
+}
+@keyframes success-check {
+  to { stroke-dashoffset: 0; }
 }
 
 /* Accessibility floor: honour reduced motion everywhere */
