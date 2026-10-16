@@ -2,21 +2,18 @@ import { CookieMarkShapes } from './CookieMark';
 import { useSvgId } from './useSvgId';
 
 type StampProps = {
-  // Sizes come from the wrapper (148px on the hero arch); the SVG fills it.
+  // Sizes come from the wrapper (.order__stamp in the order band); the SVG fills it.
   className?: string;
-  // Face colour: parchment on the hero, salt on the order ticket.
-  tone?: 'parchment' | 'salt';
 };
 
 // Brand roundel, decorative (aria-hidden). Its words are the business name and
 // "Michigan home bakery" only: never approved, certified or confirmed.
 // Drawn on a 171.43 grid (150 x 8/7) so the ring text is 12 units: the wrapper sets the
 // rendered size, and Lighthouse's font-size audit reads the unscaled 12.
-export default function Stamp({ className, tone = 'parchment' }: StampProps) {
+export default function Stamp({ className }: StampProps) {
   const ring = useSvgId('ring');
-  const classes = ['stamp', tone === 'salt' && 'stamp--salt', className].filter(Boolean).join(' ');
   return (
-    <svg className={classes} viewBox="0 0 171.43 171.43" aria-hidden="true" focusable="false">
+    <svg className={className ? `stamp ${className}` : 'stamp'} viewBox="0 0 171.43 171.43" aria-hidden="true" focusable="false">
       <defs>
         <path id={ring} d="M85.71,85.71 m-64,0 a64,64 0 1,1 128,0 a64,64 0 1,1 -128,0" />
       </defs>

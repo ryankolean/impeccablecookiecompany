@@ -1,227 +1,217 @@
 /* How ordering works (#how) and the order request (#order): one chapter.
    Plain CSS only: no @layer, @apply or @tailwind. Breakpoints match tailwind.config.js
-   (md 700, lg 1100) plus the 900px desktop step. Below 900 the ticket and the order sheet
-   stack in one column (max 720px); from 900 both sit in the right column of the same
-   5fr/7fr grid, so the ticket's perforated edge lines up with the pad's scalloped top.
+   (md 700, lg 1100, xl 1280) plus the 900px desktop step.
 
-   The tear: the ticket ends on the band line and its 14px perforated edge hangs into the
-   cocoa band, so its holes and the sheet's matching 14px scallop both show cocoa. The
-   band's top padding (--tear-gap plus the tear) holds that edge, a small gap and the
-   scallop. */
+   #how: the intro, then three salt step cards. Below 900 the cards stack as compact rows
+   (icon beside the title) so the path to the form stays short; from 900 they stand in a
+   row with arrows between them, under the intro; from 1280 the intro moves into a left
+   column beside them. The "Ready to order?" pill sits on the band's scalloped bottom
+   edge, and from 900 a caramel loop hangs from it to the pad.
+
+   #order: the stamp, title and lede centred on cocoa, then the form on a salt pad with a
+   scalloped top. From 900 the intro is a sticky left column, on the same 1fr/2fr grid
+   the steps use from 1280, so the pad lines up under the cards. */
 
 .how,
 .order {
-  --tear: 14px;
-  --tear-gap: 26px;
-  --tail-w: 38px;
-  --tail-h: 70px;
-  --marker: 38px;
-  --ticket-pad: 18px;
+  --scallop: 8px;
+  --step-gap: 36px;
+  --loop-h: 0px;
 }
-@media (min-width: 700px) {
+@media (min-width: 900px) {
   .how,
   .order {
-    --tear-gap: 34px;
-    --tail-w: 46px;
-    --tail-h: 84px;
-    --marker: 46px;
-    --ticket-pad: 30px;
+    --loop-h: 72px;
   }
 }
 
-/* ---------- Bands and grids ---------- */
+/* ---------- How band ---------- */
 
 .how {
+  position: relative;
+  z-index: 1; /* the scalloped edge, the pill and the loop paint over the order band */
+  padding-top: 64px;
   background: var(--sugar);
-  padding: 64px 0 0;
-  /* The stamp lands from scale 1.3 near the right edge: clip it sideways only, so the
-     page never scrolls wider while the tear, the tail and the stamp still hang down into
-     the order band. */
-  overflow-x: clip;
 }
-.order {
-  background: var(--cocoa);
-  color: var(--parchment);
-  padding: calc(var(--tear-gap) + var(--tear)) 0 64px;
+/* Scalloped bottom edge: sugar bumps hanging into the cocoa band. */
+.how::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: var(--scallop);
+  background: radial-gradient(circle at 8px 0, var(--sugar) 7.5px, transparent 8px) 0 0 / 16px var(--scallop) repeat-x;
 }
-@media (min-width: 700px) {
+@media (min-width: 900px) {
   .how {
     padding-top: 104px;
   }
-  .order {
-    padding-bottom: 104px;
-  }
 }
 
-.how__grid,
-.order__grid {
+.how__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-}
-.how__grid {
-  row-gap: 52px;
+  row-gap: 36px;
 }
 .how__intro {
   max-width: 34rem;
 }
+/* Always two lines, "Request first. / Pay after I confirm.", as in the mock: the
+   single-column tablet widths would otherwise fit it on one. */
+.how__title {
+  max-width: 10em;
+}
+.how__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.how__eyebrow::after {
+  content: "";
+  width: 48px;
+  height: 1.5px;
+  background: var(--caramel);
+}
 .how__lead {
-  margin: 22px 0 0;
+  margin: 18px 0 0;
   text-wrap: pretty;
 }
-.how__ticket,
-.order__intro,
-.pad {
-  width: 100%;
-  max-width: 720px;
+.how__where {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 14px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--cocoa);
+  text-wrap: pretty;
+}
+.how__pin {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M9 1.5c-3 0-5.4 2.3-5.4 5.3 0 3.9 5.4 9.7 5.4 9.7s5.4-5.8 5.4-9.7c0-3-2.4-5.3-5.4-5.3z' fill='none' stroke='%238C4416' stroke-width='1.8'/%3E%3Ccircle cx='9' cy='6.9' r='1.9' fill='%238C4416'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+}
+
+/* Caramel marks in the band's corners, desktop only. The decorative drawings in this
+   chapter are CSS backgrounds, not inline SVG, to keep the prerendered HTML inside the
+   first TCP window (about 14 KB gzip). */
+.how__sparks {
+  display: none;
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 13 1.5 9.5M13 7l-1-5.5M20.5 10l3.5-4' fill='none' stroke='%23B5652A' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
 }
 
 @media (min-width: 900px) {
-  .how__grid,
-  .order__grid {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    column-gap: 48px;
-    align-items: start;
-  }
-  .how__ticket,
-  .order__intro,
-  .pad {
-    max-width: none;
-  }
-  /* The left columns keep company with the ticket and the long form as they scroll by
-     (.order__intro sticks in the order band block below). */
-  .how__intro {
-    position: sticky;
-    top: calc(var(--header-h) + 40px);
+  .how__grid {
+    row-gap: 48px;
   }
 }
-@media (min-width: 1100px) {
-  .how__grid,
-  .order__grid {
-    column-gap: 72px;
+@media (min-width: 1280px) {
+  .how__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    column-gap: 56px;
+    align-items: center;
+  }
+  .how__title {
+    font-size: clamp(42px, 3.3vw, 50px);
+  }
+  .how__sparks {
+    display: block;
+  }
+  .how__sparks--top {
+    top: 56px;
+    right: max(24px, calc(50% - 680px));
+  }
+  .how__sparks--bottom {
+    bottom: 110px;
+    left: max(24px, calc(50% - 690px));
+    transform: rotate(200deg);
   }
 }
 
-/* ---------- Ticket ---------- */
+/* ---------- Step cards ---------- */
 
-.ticket {
-  position: relative;
-  z-index: 1; /* the tail and the stamp paint over the order band */
-  padding: 40px var(--ticket-pad) 14px;
-  border-radius: 18px 18px 0 0;
-  background: var(--salt);
-  color: var(--espresso);
-  box-shadow: 0 24px 40px -30px rgba(58, 36, 25, .6);
-}
-@media (min-width: 700px) {
-  .ticket {
-    padding-top: 44px;
-    padding-bottom: 18px;
-  }
-}
-/* Hole punch */
-.ticket::before {
-  content: "";
-  position: absolute;
-  top: 16px;
-  left: 50%;
-  width: 14px;
-  height: 14px;
-  margin-left: -7px;
-  border-radius: 50%;
-  background: var(--sugar);
-  box-shadow: inset 0 1px 2px rgba(58, 36, 25, .35);
-}
-/* Perforated tear edge; the sheet's scalloped top below is its other half. */
-.ticket::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(-1 * var(--tear));
-  height: var(--tear);
-  background: radial-gradient(circle at 10px 14px, transparent 7px, var(--salt) 7.5px) 0 0 / 20px 14px repeat-x;
-}
-
-.ticket__head {
+/* Phones and tablets: compact rows, the icon beside the label and title, the badge on
+   the top edge over the icon. */
+.steps {
+  display: grid;
+  gap: 22px;
+  width: 100%;
+  max-width: 720px;
   margin: 0;
-  padding-bottom: 14px;
-  border-bottom: 1.5px dashed rgba(58, 36, 25, .3);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--caramel-ink);
-}
-
-.ticket__steps {
-  margin: 0;
-  padding: 0;
+  padding: 14px 0 0; /* room for the first badge */
   list-style: none;
 }
-.ticket__step {
-  display: grid;
-  grid-template-columns: var(--marker) minmax(0, 1fr);
-  column-gap: 14px;
-  padding: 18px 0;
-  border-bottom: 1.5px dashed rgba(58, 36, 25, .22);
-}
-.ticket__step:last-child {
-  border-bottom: 0;
-}
-@media (min-width: 700px) {
-  .ticket__step {
-    column-gap: 18px;
-    padding: 22px 0;
-  }
-}
-
-.ticket__marker {
+.step {
   position: relative;
-  width: var(--marker);
-  height: var(--marker);
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  grid-template-areas:
+    "icon label"
+    "icon title"
+    "text text";
+  align-items: center;
+  column-gap: 14px;
+  padding: 22px 18px 18px;
+  border-radius: 16px;
+  background: var(--salt);
+  color: var(--espresso);
+  box-shadow: 0 18px 32px -26px rgba(58, 36, 25, .55);
 }
-.ticket__check {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.ticket__ring {
-  fill: none;
-  stroke: var(--cocoa);
-  stroke-width: 2;
-}
-/* Undrawn at rest (path length is about 28); src/motion/ticket.ts draws it. */
-.ticket__tick {
-  fill: none;
-  stroke: var(--caramel);
-  stroke-width: 3.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 30;
-  stroke-dashoffset: 31;
-}
-.ticket__num {
+/* No transform here: the pop below owns it. */
+.step__num {
   position: absolute;
-  inset: 0;
+  top: -14px;
+  left: 26px; /* centred over the icon: 18 + (44 - 28) / 2 */
   display: grid;
   place-items: center;
-  padding-bottom: 2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cocoa);
+  color: var(--butter);
   font-family: 'Newsreader', 'Newsreader Fallback', Georgia, serif;
-  font-size: 19px;
+  font-size: 15px;
   font-weight: 500;
   line-height: 1;
-  color: var(--cocoa);
 }
-@media (min-width: 700px) {
-  .ticket__num {
-    font-size: 22px;
-  }
+.step__icon {
+  grid-area: icon;
+  display: block;
+  width: 44px;
+  height: 44px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--cocoa);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-
-.ticket__label {
-  margin: 2px 0 8px;
+.step__icon .step__icon-accent {
+  stroke: var(--caramel);
+}
+.step__icon .step__icon-chip {
+  fill: var(--cocoa);
+  stroke: none;
+}
+.step__icon .step__icon-dot {
+  fill: var(--caramel);
+  stroke: none;
+}
+.step__icon .step__icon-knock {
+  fill: var(--salt);
+}
+.step__label {
+  grid-area: label;
+  align-self: end;
+  margin: 0 0 6px;
   font-size: 12.5px;
   font-weight: 600;
   line-height: 1;
@@ -229,184 +219,396 @@
   text-transform: uppercase;
   color: var(--caramel-ink);
 }
-.ticket__title {
+.step__title {
+  grid-area: title;
+  align-self: start;
   font-size: var(--fs-step);
   line-height: 1.08;
 }
-.ticket__text {
-  margin: 8px 0 0;
-  font-size: 15px;
-  line-height: 1.55;
-  color: var(--muted);
-  text-wrap: pretty;
-}
-@media (min-width: 700px) {
-  .ticket__text {
-    font-size: 16px;
-  }
-}
-.ticket__handle {
-  font-weight: 600;
-  color: var(--cocoa);
-}
-
-/* The right padding keeps the line clear of the stamp's corner: the stamp's width plus
-   its right offset, less the ticket padding (84 + 12 - 18, then 112 + 32 - 30). */
-.ticket__foot {
-  display: grid;
-  grid-template-columns: var(--marker) minmax(0, 1fr);
-  column-gap: 14px;
-  align-items: start;
-  margin: 0;
-  padding: 16px 78px 0 0;
-  border-top: 1.5px dashed rgba(58, 36, 25, .3);
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.45;
-  color: var(--cocoa);
-}
-@media (min-width: 700px) {
-  .ticket__foot {
-    column-gap: 18px;
-    padding-right: 114px;
-  }
-}
-.ticket__pin {
-  justify-self: center;
-  margin-top: 1px;
-}
-
-/* At rest across the perforation on the lower right, where the eye is when the ticket
-   timeline ends; ticket.ts lands it from scale 1.3 and -24deg at the ticket's bottom 60%.
-   z-index 2 keeps the perforated edge (::after) under its face. */
-.ticket__stamp {
-  position: absolute;
-  z-index: 2;
-  right: 12px;
-  bottom: calc(-1 * (var(--tear) + 34px));
-  width: 84px;
-  height: 84px;
-  transform: rotate(-12deg);
-}
-@media (min-width: 700px) {
-  .ticket__stamp {
-    right: 32px;
-    bottom: calc(-1 * (var(--tear) + 42px));
-    width: 112px;
-    height: 112px;
-  }
-}
-
-/* Hangs from the ticket's bottom edge, under the step markers, across the tear and the
-   gap, and points into the sheet's top padding. Fixed size: no stretched strokes. */
-.ticket__tail {
-  position: absolute;
-  z-index: 1; /* above the perforated edge (::after) */
-  top: calc(100% - 2px);
-  left: var(--ticket-pad);
-  width: var(--tail-w);
-  height: var(--tail-h);
-  overflow: visible;
-  pointer-events: none;
-  fill: none;
-  stroke: var(--caramel);
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* ---------- Order band: intro and pad form one salt sheet below 900 ---------- */
-
-/* The intro's 6px foot keeps the lede link's focus ring clear of the pad, which comes
-   later in the DOM and would paint over the ring's bottom edge. */
-.order__intro {
-  position: relative;
-  padding: 30px 18px 6px;
-  background: var(--salt);
-  color: var(--espresso);
-  --ring: var(--caramel-ink);
-  --eyebrow-ink: var(--caramel-ink);
-}
-.order__title {
-  color: var(--cocoa);
-}
-.order__lede {
+.step__text {
+  grid-area: text;
   margin: 12px 0 0;
   font-size: 15px;
   line-height: 1.55;
   color: var(--muted);
   text-wrap: pretty;
 }
+.step__handle {
+  font-weight: 600;
+  color: var(--cocoa);
+}
+.step__arrow {
+  display: none;
+}
+
+/* From 900: three upright cards in a row, centred heads over left-aligned copy, arrows in
+   the gaps at title height. Cards keep their own heights (step 2 runs longest). */
+@media (min-width: 900px) {
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--step-gap);
+    align-items: start;
+    max-width: none;
+    padding-top: 18px;
+  }
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 34px 22px 26px;
+    text-align: center;
+  }
+  .step__num {
+    top: -18px;
+    left: calc(50% - 18px);
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  .step__icon {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 14px;
+  }
+  .step__label {
+    align-self: auto;
+    margin-bottom: 8px;
+  }
+  .step__title {
+    align-self: auto;
+  }
+  .step__text {
+    align-self: stretch;
+    margin-top: 12px;
+    text-align: left;
+  }
+  .step__arrow {
+    display: block;
+    position: absolute;
+    top: 128px;
+    left: calc(100% + 6px);
+    width: calc(var(--step-gap) - 12px);
+    height: 16px;
+    overflow: visible;
+    fill: none;
+    stroke: var(--cocoa);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+/* ---------- "Ready to order?" ---------- */
+
+/* The pill sits on the scalloped edge: the negative margin lets its foot overhang the
+   band down to the scallops' tips, and z-index keeps it over them. */
+.how__next {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 calc(-1 * var(--scallop));
+}
+@media (min-width: 1280px) {
+  .how__next {
+    grid-column: 1 / -1;
+  }
+}
+/* The sugar ring carries the band's edge around the pill's foot, so the cocoa pill
+   still reads where it overhangs the cocoa band. Its two lines may wrap (large text
+   settings) instead of running off a narrow screen. Scoped: index.css (the .pill
+   primitive) loads after this file. */
+.how__next .ready {
+  max-width: 100%;
+  gap: 18px;
+  min-height: 62px;
+  padding: 10px 24px 10px 32px;
+  white-space: normal;
+  text-align: center;
+  box-shadow: 0 0 0 3px var(--sugar), 0 14px 24px -14px rgba(36, 22, 15, .9);
+}
+/* Focused, the sugar ring widens under the outline, so the caramel-ink ring sits on sugar
+   on every side, including where the pill overhangs the cocoa band (4.71:1). */
+.how__next .ready:focus-visible {
+  outline-offset: 2px;
+  box-shadow: 0 0 0 7px var(--sugar), 0 14px 24px -14px rgba(36, 22, 15, .9);
+}
+.ready__text {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+.ready__title {
+  font-family: 'Newsreader', 'Newsreader Fallback', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.ready__sub {
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--sugar);
+}
+.ready__arrow {
+  display: inline-flex;
+}
+
+.how__loop {
+  display: none;
+}
+@media (min-width: 900px) {
+  .how__loop {
+    display: block;
+    position: absolute;
+    top: calc(100% - 2px);
+    left: calc(50% - 20px);
+    width: 40px;
+    height: var(--loop-h);
+    pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 72'%3E%3Cpath d='M20 2c0 9-2 14-6 19-5 6-1 13 6 12 7-1 7-10 0-11-7-1-10 7-8 16 2 8 8 13 8 32M14.5 64.5 20 70l5.5-5.5' fill='none' stroke='%23B5652A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+  }
+}
+
+/* ---------- Order band ---------- */
+
+/* Top padding: the hanging scallop, the pill's overhang, the loop, then the pad's own
+   scallop above its box. */
+.order {
+  padding: calc(var(--scallop) * 2 + var(--loop-h) + 30px) 0 64px;
+  background: var(--cocoa);
+  color: var(--parchment);
+}
+@media (min-width: 700px) {
+  .order {
+    padding-bottom: 104px;
+  }
+}
+@media (min-width: 900px) {
+  .order {
+    padding-top: calc(var(--scallop) * 2 + var(--loop-h) + 10px);
+  }
+}
+
+.order__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 30px;
+}
+.order__intro,
+.pad {
+  width: 100%;
+  max-width: 720px;
+}
+.order__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* The stamp drawn in line on cocoa: no face, sugar ink. Phones skip it to keep the
+   path to the first field short. */
+.order__stamp {
+  display: none;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 14px;
+}
+.order__stamp .stamp__face {
+  fill: none;
+  stroke: var(--sugar);
+}
+.order__stamp .stamp__ring {
+  stroke: var(--sugar);
+}
+.order__stamp .stamp__text,
+.order__stamp .cookie-mark__disc {
+  fill: var(--sugar);
+}
+.order__stamp .cookie-mark__i {
+  fill: var(--cocoa);
+}
+
+.order__title {
+  color: var(--butter);
+}
+/* The short rule under the title is the lede's own, so the heading's focus ring stays
+   tight around the words. */
+.order__lede {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--cream-muted);
+  text-wrap: pretty;
+}
+.order__lede::before {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 1.5px;
+  margin: 16px auto 14px;
+  background: var(--caramel);
+}
+.order__lede .link {
+  color: var(--butter);
+}
+.order__heart {
+  display: none;
+}
 
 .pad {
   position: relative;
-  padding: 14px 18px 28px;
-  border-radius: 0 0 22px 22px;
+  isolation: isolate; /* the corner sketch sits behind the form, above the salt */
+  padding: 22px 18px 28px;
+  border-radius: 0 0 18px 18px;
   background: var(--salt);
   color: var(--espresso);
 }
-
-/* Scalloped top: the torn-off half of the ticket's perforation. */
-.order__intro::before,
+/* Scalloped top: salt bumps rising into the cocoa band. */
 .pad::before {
   content: "";
   position: absolute;
+  bottom: 100%;
   left: 0;
   right: 0;
-  top: calc(-1 * var(--tear));
-  height: var(--tear);
-  background: radial-gradient(circle at 10px 0, transparent 7px, var(--salt) 7.5px) 0 0 / 20px 14px repeat-x;
+  height: var(--scallop);
+  background: radial-gradient(circle at 8px var(--scallop), var(--salt) 7.5px, transparent 8px) 0 0 / 16px var(--scallop) space no-repeat;
 }
-.pad::before {
+.pad__art {
   display: none;
 }
 
 @media (min-width: 700px) {
-  .order__intro {
-    padding: 40px 40px 6px;
+  .order__stamp {
+    display: block;
   }
   .order__lede {
     font-size: var(--fs-body);
   }
   .pad {
-    padding: 20px 40px 36px;
+    padding: 32px 40px 40px;
+  }
+  /* Clipped to the pad's corner and kept clear of the controls: the form's last block is
+     the statutory sentence, which wraps short of it, as does the success panel (below). */
+  .pad__art {
+    display: block;
+    position: absolute;
+    z-index: -1;
+    right: 0;
+    bottom: 0;
+    width: 132px;
+    height: 132px;
+    border-bottom-right-radius: 18px;
+    pointer-events: none;
+    /* The sketch runs past the corner; the box clips it (background never paints outside). */
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150' fill='none' stroke='%23B5652A' stroke-width='1.6' stroke-linecap='round'%3E%3Ccircle cx='80' cy='80' r='58'/%3E%3Ccircle cx='58' cy='64' r='6'/%3E%3Ccircle cx='86' cy='50' r='5'/%3E%3Ccircle cx='74' cy='94' r='6.5'/%3E%3Ccircle cx='104' cy='80' r='5'/%3E%3Ccircle cx='46' cy='98' r='4.5'/%3E%3Cpath d='M62 82c4-3 9-3 12 1M95 104c3-2 7-2 9 1M18 30 9.5 23M30 17l-2-10M14 46l-10-1'/%3E%3C/svg%3E") no-repeat 20px 20px / 150px 150px;
+    opacity: .4;
+  }
+  .pad .order-form__notice,
+  .pad .order-success {
+    padding-right: 120px;
   }
 }
 
 @media (min-width: 900px) {
+  .order__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    column-gap: 48px;
+    align-items: start;
+  }
+  .order__intro,
+  .pad {
+    max-width: none;
+  }
   .order__intro {
     position: sticky;
     top: calc(var(--header-h) + 40px);
-    padding: 4px 0 0;
-    background: none;
-    color: var(--parchment);
-    --ring: var(--butter);
-    --eyebrow-ink: var(--sugar);
+    padding-top: 12px;
   }
-  .order__intro::before {
-    display: none;
+  .order__stamp {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 20px;
   }
-  .order__title {
-    color: var(--butter);
-  }
-  .order__lede {
-    margin-top: 22px;
-    color: var(--cream-muted);
-  }
-  .order__lede .link {
-    color: var(--butter);
-  }
-  .pad {
-    padding: 32px;
-  }
-  .pad::before {
+  .order__heart {
     display: block;
+    width: 26px;
+    height: 26px;
+    margin-top: 20px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 20.5s-7.5-4.6-7.5-10.1A4.1 4.1 0 0 1 12 8.2a4.1 4.1 0 0 1 7.5 2.2c0 5.5-7.5 10.1-7.5 10.1z' fill='none' stroke='%23B5652A' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
   }
 }
 @media (min-width: 1100px) {
   .pad {
-    padding: 40px;
+    padding: 40px 44px 44px;
   }
+}
+@media (min-width: 1280px) {
+  .order__grid {
+    column-gap: 56px;
+  }
+}
+
+/* ---------- Motion (CSS only; static at rest) ---------- */
+
+/* The arrow on "Ready to order?" bobs. */
+@media (prefers-reduced-motion: no-preference) {
+  .ready__arrow {
+    animation: ready-bob 2.4s ease-in-out infinite;
+  }
+}
+@keyframes ready-bob {
+  0%, 60%, 100% { transform: none; }
+  30% { transform: translateY(4px); }
+}
+
+/* Scroll-driven, behind the same guard as index.css. Each card is a named view timeline
+   (its own .reveal runs on view() separately): the badge pops and the arrow to the next
+   card draws while the card enters, both done by the time it is fully on screen. In the
+   row the cards' reveals start a little apart. Firefox gets the .reveal replay from
+   runtime.ts and static badges and arrows. */
+@supports (animation-timeline: view()) and (animation-range: entry 0% cover 30%) {
+  @media (prefers-reduced-motion: no-preference) {
+    .step {
+      view-timeline-name: --step;
+    }
+    .step__num {
+      animation: step-pop linear both;
+      animation-timeline: --step;
+      animation-range: entry 35% entry 85%;
+    }
+    .step__arrow path {
+      stroke-dasharray: 1;
+      animation: step-draw linear both;
+      animation-timeline: --step;
+      animation-range: entry 55% entry 100%;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
+    .step:nth-child(2) {
+      animation-range: entry 12% entry 100%;
+    }
+    .step:nth-child(3) {
+      animation-range: entry 24% entry 100%;
+    }
+    .step:nth-child(2) .step__num {
+      animation-range: entry 45% entry 90%;
+    }
+    .step:nth-child(3) .step__num {
+      animation-range: entry 55% entry 100%;
+    }
+  }
+}
+
+@keyframes step-pop {
+  from { transform: scale(0); }
+  70% { transform: scale(1.15); }
+  to { transform: none; }
+}
+@keyframes step-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
 }
 
 /* ---------- Form ---------- */
@@ -635,8 +837,18 @@
   gap: 16px 22px;
   margin-top: 30px;
 }
-.order-form__submit {
+/* Uppercase and tracked, the arrow kept. Scoped, like the width step below: index.css
+   (the .pill primitive) loads after this file. With large text the label wraps inside
+   the pill instead of running off the screen; at the normal size it is one line. */
+.order-form .order-form__submit {
   width: 100%;
+  padding-block: 12px;
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: .14em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: normal;
 }
 /* Disabled until React owns the form (and for good without JS), and while sending:
    only the sending state shows the progress cursor. */
@@ -665,8 +877,9 @@
   text-wrap: pretty;
 }
 @container order-form (min-width: 420px) {
-  .order-form__submit {
+  .order-form .order-form__submit {
     width: auto;
+    min-width: 280px;
   }
 }
 /* The "still loading" note: hidden for the first 4s (hydration normally removes it well

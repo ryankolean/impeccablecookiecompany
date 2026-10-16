@@ -1,18 +1,23 @@
 // Responsive photo backed by the variants scripts/optimize-images.sh writes to
-// public/images/. AVIF first, JPEG fallback, explicit dimensions so layout is
-// reserved before the image arrives.
+// public/images/. AVIF first, WebP fallback (both keep a cutout's transparency; JPEG
+// has none), explicit dimensions so layout is reserved before the image arrives.
 
 const PHOTOS = {
-  // Exported at 6:7 to match the hero arch, so the rendered width is the frame width.
-  // 720 serves most phones (about 360px wide at 2x), the LCP on mobile.
-  hero: { widths: [480, 720, 960, 1440], ratio: 7 / 6 },
+  // The cookie lifted off its plate and cropped to the cookie (2508x1922 master), so
+  // the rendered width is the cookie's width. 720 serves the Lighthouse phone (412px at
+  // 1.75x) and keeps the mobile LCP image under 30 KB; 2x phones take 960.
+  hero: { widths: [480, 720, 960, 1440], ratio: 1922 / 2508 },
 } as const;
 
-// The hero arch's rendered width: about 500px from 1100px up, about 44vw from 900px,
-// and in the single-column layout 92vw until .hero__art's 460px cap (446px of photo)
-// takes over at about 500px. index.html preloads the hero with this exact string as
-// imagesizes; change both together or the preload is wasted.
-export const HERO_SIZES = '(min-width: 1100px) 500px, (min-width: 900px) 44vw, (min-width: 500px) 446px, 92vw';
+// The hero cookie's rendered width (hero.css). Below 900px: the content width plus half
+// the gutter (100vw - 20px on phones), capped at 640px from 660px. From 900px: the art
+// column plus its bleed, which is 62vw - 100px until the container stops growing at
+// 1336px (a little generous below 1045px, where the H1 sits at its 46px floor), about
+// 730px while the H1 still grows, and 37.5vw + 98px once it stops at 74px (1680px).
+// index.html preloads the hero with this exact string as imagesizes; change both
+// together or the preload is wasted.
+export const HERO_SIZES =
+  '(min-width: 1680px) calc(37.5vw + 98px), (min-width: 1336px) 730px, (min-width: 900px) calc(62vw - 100px), (min-width: 660px) 640px, calc(100vw - 20px)';
 
 type PhotoName = keyof typeof PHOTOS;
 
@@ -34,8 +39,8 @@ export default function Photo({ name, alt, sizes, className, priority = false }:
     <picture className="contents">
       <source type="image/avif" srcSet={srcSet('avif')} sizes={sizes} />
       <img
-        src={`/images/${name}-${fallback}.jpg`}
-        srcSet={srcSet('jpg')}
+        src={`/images/${name}-${fallback}.webp`}
+        srcSet={srcSet('webp')}
         sizes={sizes}
         width={fallback}
         height={Math.round(fallback * ratio)}

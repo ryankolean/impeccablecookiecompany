@@ -13,19 +13,24 @@
 //                        #order-title.
 //   [data-scroll-reveal] One paragraph of plain text: words brighten 0.55 -> 1 as it is
 //                        read, the block settles from a slight rotation.
-//   [data-ticket]        The order ticket signature. Its child hooks are defined and
-//                        documented in ./ticket.ts (order-chapter builder).
 //   [data-arrival-focus] Read by MotionProvider: what scrollToSection focuses on landing.
 // One driver per element: never put .reveal on an element that also carries
-// [data-split], [data-scroll-reveal] or a ticket hook.
+// [data-split] or [data-scroll-reveal]. The order step cards (Steps.tsx) are .reveal
+// only here: their badge pop and arrow draw are CSS view timelines (order.css), static
+// where the @supports guard fails.
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
-import { belowFold, initTicket } from './ticket';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
+
+// Never hide what the visitor has already seen, and never hide anything in a hidden tab
+// (rAF is paused there, so a hidden start state would stick).
+function belowFold(el: Element): boolean {
+  return document.visibilityState === 'visible' && el.getBoundingClientRect().top > window.innerHeight;
+}
 
 export type MotionRuntime = { lenis: Lenis; destroy: () => void };
 
@@ -135,11 +140,9 @@ export function startMotion(): MotionRuntime {
   mm.add(NO_PREFERENCE, () => {
     const revertSplits = initSplitHeadings();
     initRevealFallback();
-    const killTicket = initTicket(gsap, ScrollTrigger);
     const revertScrollReveal = initScrollReveal();
     return () => {
       revertScrollReveal();
-      killTicket();
       revertSplits();
     };
   });
