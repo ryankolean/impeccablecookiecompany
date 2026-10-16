@@ -5,36 +5,57 @@
 #
 # Originals never go in public/ or in git: camera files carry GPS and device
 # EXIF, and this repo and site are public. Every output is stripped.
-# Needs ImageMagick 7 with AVIF support (brew install imagemagick).
+# Needs ImageMagick 7 with AVIF and WebP support (brew install imagemagick), and
+# for cutouts macOS 14+ with swift (Xcode command line tools).
 set -euo pipefail
 
 src=${1:?usage: scripts/optimize-images.sh <dir-with-originals>}
-out="$(cd "$(dirname "$0")/.." && pwd)/public/images"
+here="$(cd "$(dirname "$0")" && pwd)"
+out="$(cd "$here/.." && pwd)/public/images"
 mkdir -p "$out"
+work="$(mktemp -d)"
+trap 'rm -rf "$work"' EXIT
 
-# name | original file | crop | widths | focus
-# crop "6:7" cuts the largest 6:7 frame from the original: the hero arch is
-# aspect 6/7, so the frame and the image share an aspect and nothing is
-# cover-cropped (the sizes value in Photo.tsx is the rendered width). focus is
-# the vertical centre of that frame as a fraction of the original height; 0.55
-# keeps the cookie and its salt flakes in the middle of the arch.
-# crop "none" keeps the original frame.
+# name | original file | mode | widths | grade
+# mode "cutout" lifts the subject off its background with scripts/lift-subject.swift
+# and keeps the transparency, so the page shows the cookie itself with no frame; the
+# image is cropped to the cookie, so the sizes value in Photo.tsx is the cookie's
+# rendered width. mode "none" keeps the original frame.
+# grade is ImageMagick operators applied to the full-size master before resizing
+# (empty for none). The hero grade was chosen by eye on parchment: a gentle S-curve,
+# lifted mids, a warmer, richer crust and a little less blue, so the cookie reads
+# bright and golden instead of dark and moody.
 photos=(
-  "hero|PXL_20241205_134705256.PORTRAIT.ORIGINAL.jpg|6:7|480 720 960 1440|0.55"
+  "hero|PXL_20241205_134705256.PORTRAIT.ORIGINAL.jpg|cutout|480 720 960 1440|-channel RGB +sigmoidal-contrast 3,30% -level 0%,90%,1.18 -modulate 107,115,99 -channel B -evaluate multiply 0.96 +channel"
 )
 
 for row in "${photos[@]}"; do
-  IFS='|' read -r name file crop widths focus <<<"$row"
+  IFS='|' read -r name file mode widths grade <<<"$row"
+  master="$work/$name.png"
+  if [ "$mode" = cutout ]; then
+    swift "$here/lift-subject.swift" "$src/$file" "$work/$name-raw.png"
+    # The mask's soft edge still carries the grey plate behind the cookie, which reads
+    # as a grey rim on parchment. Every pixel under 99% opacity takes the colour of the
+    # nearby opaque cookie instead (a normalised blur of that core); alpha is kept.
+    magick "$work/$name-raw.png" -write mpr:src +delete \
+      \( mpr:src -alpha extract -threshold 99% -write mpr:core +delete \) \
+      \( mpr:src -alpha off mpr:core -compose Multiply -composite -blur 0x12 \) \
+      \( mpr:core -blur 0x12 \) -compose Divide_Dst -composite \
+      \( mpr:src -alpha off \) mpr:core -compose Over -composite \
+      \( mpr:src -alpha extract \) -alpha off -compose CopyOpacity -composite \
+      "$work/$name-lift.png"
+  else
+    magick "$src/$file" -auto-orient "$work/$name-lift.png"
+  fi
+  read -ra ops <<<"$grade"
+  magick "$work/$name-lift.png" ${ops[@]+"${ops[@]}"} "$master"
+
+  # AVIF (served first) and WebP, both with alpha; JPEG has none. Fully transparent
+  # pixels take the parchment colour, which only makes the AVIF smaller.
   for w in $widths; do
-    args=(-auto-orient)
-    if [ "$crop" = 6:7 ]; then
-      cw="floor(min(w,h*6/7))"
-      ch="floor(min(h,w*7/6))"
-      args+=(-crop "%[fx:$cw]x%[fx:$ch]+%[fx:floor((w-$cw)/2)]+%[fx:floor(max(0,min(h-$ch,${focus:-0.5}*h-$ch/2)))]" +repage)
-    fi
-    args+=(-resize "${w}x" -strip -colorspace sRGB)
-    magick "$src/$file" "${args[@]}" -quality 50 "$out/$name-$w.avif"
-    magick "$src/$file" "${args[@]}" -quality 78 -sampling-factor 4:2:0 -interlace JPEG "$out/$name-$w.jpg"
+    args=(-resize "${w}x" -strip -colorspace sRGB)
+    magick "$master" "${args[@]}" -background '#FBF5EA' -alpha background -quality 45 "$out/$name-$w.avif"
+    magick "$master" "${args[@]}" -quality 78 -define webp:alpha-quality=80 -define webp:method=6 "$out/$name-$w.webp"
   done
 done
 

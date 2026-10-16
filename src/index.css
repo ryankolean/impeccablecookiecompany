@@ -346,7 +346,8 @@
   }
 }
 
-/* Stamp roundel. Ink stays caramel-ink; the face matches the surface it sits on. */
+/* Stamp roundel: caramel-ink on a parchment face. The order band redraws it in sugar
+   line on cocoa (order.css). */
 .stamp {
   display: block;
   width: 100%;
@@ -356,9 +357,6 @@
 .stamp__face {
   fill: var(--parchment);
   stroke: var(--caramel-ink);
-}
-.stamp--salt .stamp__face {
-  fill: var(--salt);
 }
 .stamp__ring {
   fill: none;
@@ -383,10 +381,9 @@
 /* ---------- Motion (CSS first; GSAP and Lenis arrive later in src/motion/runtime.ts) ---------- */
 
 /* Hero load. Add .hero-in with style="--i: n" for an 80ms stagger. The H1 and lede add
-   .no-fade (either may be the mobile LCP, so transform only). The hero photo is the
-   LCP element: .hero-photo-in moves it but never touches opacity. .stamp-press goes on
-   the stamp's wrapper; the exit rules below go on different, nested elements because
-   one element can only run one animation. */
+   .no-fade (either may be the mobile LCP, so transform only). The hero cookie is the
+   LCP element: its own load and exit motion lives in src/styles/hero.css
+   (.hero-cookie-in, .hero-exit-lift) and never touches opacity. */
 @media (prefers-reduced-motion: no-preference) {
   .hero-in {
     animation: hero-rise 900ms var(--ease-hero) both;
@@ -394,12 +391,6 @@
   }
   .hero-in.no-fade {
     animation-name: hero-rise-only;
-  }
-  .hero-photo-in {
-    animation: hero-settle 1100ms var(--ease-hero) both;
-  }
-  .stamp-press {
-    animation: stamp-press 600ms var(--ease-hero) 520ms both;
   }
 }
 
@@ -409,12 +400,6 @@
 @keyframes hero-rise-only {
   from { transform: translateY(24px); }
 }
-@keyframes hero-settle {
-  from { transform: translateY(14px) scale(1.03); }
-}
-@keyframes stamp-press {
-  from { opacity: 0; transform: rotate(-28deg) scale(.86); }
-}
 
 /* Scroll-driven rules. The guard also tests animation-range: Firefox Nightly has
    animation-timeline without it and would run these across the whole view range.
@@ -422,20 +407,6 @@
    animation must come before animation-timeline (the shorthand resets it). */
 @supports (animation-timeline: view()) and (animation-range: entry 0% cover 30%) {
   @media (prefers-reduced-motion: no-preference) {
-    /* Hero exit: put .hero-exit-turn on the stamp <svg> (never an SVG <g>) and
-       .hero-exit-shrink on the photo's outer wrapper. Transform only. */
-    .hero-exit-turn {
-      animation: hero-exit-turn linear both;
-      animation-timeline: view();
-      /* From mid-screen, so the turn is seen before the stamp slides under the header. */
-      animation-range: cover 50% cover 100%;
-    }
-    .hero-exit-shrink {
-      animation: hero-exit-shrink linear both;
-      animation-timeline: view();
-      animation-range: exit 0% exit 100%;
-    }
-
     /* Section blocks below the hero. One driver per element: never combine .reveal
        with [data-split], [data-scroll-reveal] or a GSAP tween on the same node.
        The range ends when the block is fully on screen (the spec's "cover 30%" ended
@@ -449,12 +420,6 @@
   }
 }
 
-@keyframes hero-exit-turn {
-  to { transform: rotate(120deg); }
-}
-@keyframes hero-exit-shrink {
-  to { transform: scale(.94); }
-}
 @keyframes reveal-rise {
   from { opacity: 0; transform: translateY(var(--rise-lg)); }
   60% { opacity: 1; }

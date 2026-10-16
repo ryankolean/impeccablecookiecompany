@@ -3,17 +3,16 @@ import Photo, { HERO_SIZES } from './Photo';
 import Eyebrow from './ui/Eyebrow';
 import Magnet from './ui/Magnet';
 import PillLink from './ui/PillLink';
-import Stamp from './ui/Stamp';
 import Swash from './ui/Swash';
 import '../styles/hero.css';
 
 const step = (i: number) => ({ '--i': i }) as CSSProperties;
 
 // Load: .hero-in rises in an 80ms stagger; the H1 and lede move with transform only
-// (either may be the mobile LCP) and the photo never touches opacity. Exit: the arch
-// group shrinks and the stamp turns as the hero leaves (CSS view timelines in
-// index.css). Each element runs one animation, so load and exit classes sit on
-// different nested wrappers.
+// (either may be the mobile LCP). The cookie settles onto its shadow (.hero-cookie-in)
+// and, as the hero leaves, turns a little and drifts up (.hero-exit-lift); both are
+// transform only and never touch opacity (hero.css). Each element runs one animation,
+// so the two sit on nested wrappers.
 export default function Hero() {
   return (
     <section id="home" className="hero" aria-labelledby="hero-title">
@@ -44,19 +43,21 @@ export default function Hero() {
           </ul>
         </div>
 
-        <div className="hero__art hero-exit-shrink">
-          <div className="hero__plate" aria-hidden="true" />
-          <div className="hero__arch hero-photo-in">
-            <Photo
-              name="hero"
-              alt="A thick chocolate chip cookie topped with flaky sea salt on a gray stoneware plate"
-              sizes={HERO_SIZES}
-              className="hero__photo"
-              priority
-            />
-          </div>
-          <div className="hero__stamp stamp-press">
-            <Stamp className="hero-exit-turn" />
+        <div className="hero__art">
+          <div className="hero__stage">
+            <div className="hero__shadow" aria-hidden="true" />
+            <div className="hero__crumbs" aria-hidden="true" />
+            <div className="hero__cookie hero-exit-lift">
+              <div className="hero-cookie-in">
+                <Photo
+                  name="hero"
+                  alt="A thick chocolate chip cookie topped with flaky sea salt"
+                  sizes={HERO_SIZES}
+                  className="hero__photo"
+                  priority
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

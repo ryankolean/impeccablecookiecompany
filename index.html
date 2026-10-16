@@ -68,14 +68,14 @@
     <!-- Only the headline face is preloaded. Figtree loads on first use; the below-the-fold
          italic is registered after the load event (src/main.tsx). -->
     <link rel="preload" href="/fonts/newsreader-500.woff2" as="font" type="font/woff2" crossorigin />
-    <!-- The hero photo is the LCP element. Must match the srcset in src/components/Photo.tsx
+    <!-- The hero cookie is the LCP element. Must match the srcset in src/components/Photo.tsx
          and its HERO_SIZES string exactly, or this download is wasted. -->
     <link
       rel="preload"
       as="image"
       type="image/avif"
       imagesrcset="/images/hero-480.avif 480w, /images/hero-720.avif 720w, /images/hero-960.avif 960w, /images/hero-1440.avif 1440w"
-      imagesizes="(min-width: 1100px) 500px, (min-width: 900px) 44vw, (min-width: 500px) 446px, 92vw"
+      imagesizes="(min-width: 1680px) calc(37.5vw + 98px), (min-width: 1336px) 730px, (min-width: 900px) calc(62vw - 100px), (min-width: 660px) 640px, calc(100vw - 20px)"
       fetchpriority="high"
     />
   </head>

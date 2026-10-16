@@ -5,15 +5,15 @@
 // Every text pair in use is AA; caramel is for graphics only, never text.
 const palette = {
   parchment: '#FBF5EA', // page base, hero, cookies band, header
-  butter: '#F5E6BC', // story band, arch plate, light text and buttons on cocoa
-  sugar: '#E8CFA6', // how-ordering band, ticket hole punch, eyebrows on cocoa
+  butter: '#F5E6BC', // story band, light text and buttons on cocoa
+  sugar: '#E8CFA6', // how-ordering band, stamp line on cocoa, eyebrows on cocoa
   caramel: '#B5652A', // graphics only: swash, checks, speckles, underlines, dots
   'caramel-ink': '#8C4416', // eyebrows, step labels, card numbers, stamp, ring on light
   cocoa: '#3A2419', // headings, primary pill, order band
   'cocoa-deep': '#24160F', // footer, primary hover
   espresso: '#2B1C14', // body text on light bands
   muted: '#6A4C38', // secondary text, descriptions, captions, placeholders
-  salt: '#FFFDF8', // cards, ticket, order pad
+  salt: '#FFFDF8', // cards, step cards, order pad
   field: '#8A6A50', // input, select and radio borders
   'cream-muted': '#D9C3A0', // secondary text on cocoa and cocoa-deep
   error: '#A1281C', // field errors on salt or white

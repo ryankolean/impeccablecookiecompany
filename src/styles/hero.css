@@ -1,10 +1,19 @@
-/* Hero (#home), parchment. Below 900px: text and CTA first, then the photo. From 900px:
-   text left, oven arch right. The arch is 6:7 at every width, matching the exported
-   photo, and never wider than HERO_SIZES in Photo.tsx says (500px from 1100px, about
-   44vw from 900px, the content column below). */
+/* Hero (#home), parchment. Below 900px: text and CTA first, then the cookie. From 900px:
+   text left, the cookie right, as large as the space allows and bleeding past the
+   container's right edge; the hero clips it, so the page never scrolls sideways. The
+   cookie is a cutout (scripts/optimize-images.sh) with no frame, on a butter disc that
+   bleeds off the right edge, a CSS contact shadow and a few crumbs. HERO_SIZES in
+   Photo.tsx is its rendered width at each step; change both together. */
 
 .hero {
+  /* The H1 size. From 900px the text column is sized from it, so the H1 always breaks
+     as "The perfect cookie, / made in Michigan." and the cookie takes the rest. */
+  --hero-h1: clamp(46px, 4.4vw, 74px);
   padding-top: var(--header-h);
+  /* Clips the butter disc behind the cookie on both axes; isolate keeps its z-index -1
+     inside the hero. */
+  overflow: clip;
+  isolation: isolate;
 }
 
 .hero__grid {
@@ -22,7 +31,7 @@
 .hero__title {
   max-width: 12em;
   font-family: 'Newsreader', 'Newsreader Hero Fallback', Georgia, serif;
-  font-size: clamp(46px, 5.3vw, 74px);
+  font-size: var(--hero-h1);
   text-wrap: balance;
 }
 
@@ -73,51 +82,69 @@
   background: var(--caramel);
 }
 
-/* Arch group: butter plate offset up and right, the photo, and the stamp. The right
-   padding leaves room for the plate offset inside the gutter. Capped on tablets so the
-   6:7 arch does not take a whole screen. */
+/* The art column centres the stage. Below 900px it takes half of each gutter as well,
+   so on phones the cookie is nearly the full screen width (640px cap on tablets). */
 .hero__art {
+  display: flex;
+  justify-content: center;
+  margin-inline: calc(var(--gutter) / -2);
+}
+
+/* The stage is exactly the cookie's box (the cutout's 2508:1922 shape); the shadow and
+   the crumbs are placed in it. */
+.hero__stage {
   position: relative;
-  justify-self: center;
   width: 100%;
-  max-width: 460px;
-  padding-right: 14px;
+  max-width: 640px;
+  aspect-ratio: 2508 / 1922;
 }
 
-/* A true semicircle on top (50% of the width across, 3/7 of the 7-unit height down)
-   with 18px lower corners. */
-.hero__plate,
-.hero__arch {
-  border-radius: 50% 50% 18px 18px / 42.857% 42.857% 18px 18px;
-}
-
-.hero__plate {
+/* Butter disc behind the cookie, bleeding off the right edge. On phones it is smaller and
+   sits low, so its top starts below the fact lines rather than behind them; the hero
+   clips its bottom. */
+.hero__stage::before {
+  content: "";
   position: absolute;
-  inset: 0 14px 0 0;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  aspect-ratio: 1;
+  border-radius: 50%;
   background: var(--butter);
-  transform: translate(14px, -14px);
-}
-
-.hero__arch {
-  position: relative;
-  aspect-ratio: 6 / 7;
-  overflow: hidden;
-  background: var(--muted);
+  transform: translate(-36%, -38%);
+  pointer-events: none;
 }
 
 .hero__photo {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
 }
 
-.hero__stamp {
+/* Contact shadow, mostly hidden by the cookie: a tight espresso core right under its
+   foot over a wide soft falloff, both a little to the left (the light in the photo
+   comes from the right). */
+.hero__shadow {
   position: absolute;
-  right: 0;
-  bottom: -30px;
-  width: 104px;
-  height: 104px;
+  right: 9%;
+  bottom: -5%;
+  left: 5%;
+  height: 26%;
+  background:
+    radial-gradient(44% 24% at 47% 72%, rgb(43 28 20 / .36), rgb(43 28 20 / 0)),
+    radial-gradient(closest-side, rgb(43 28 20 / .2), rgb(43 28 20 / .08) 60%, rgb(43 28 20 / 0));
+}
+
+.hero__crumbs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* A few crumbs at the cookie's foot, drawn in the stage's own units (1000 across, the
+     cutout's 2508:1922 shape) so they scale with the cookie: golden crumbs, two with a
+     sugar facet, a pale sugar one and a cocoa fleck. In CSS, not inline SVG, to keep the
+     prerendered HTML inside the first TCP window (about 14 KB gzip). */
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 766' preserveAspectRatio='none'%3E%3Cpath fill='%23BF8A52' d='M99 722C98 724 93 725 90 726C86 727 81 729 79 728C76 727 75 723 75 720C74 717 73 713 75 711C77 710 83 711 87 711C90 711 95 712 97 713C99 715 100 720 99 722ZM126 746C125 747 122 746 120 745C118 744 115 742 115 741C115 739 118 738 120 737C122 736 126 735 127 736C129 737 129 740 129 741C129 743 128 745 126 746ZM898 720C896 719 896 716 896 713C896 711 897 707 899 706C902 705 907 707 909 708C912 710 915 713 915 715C914 717 910 719 907 720C905 721 900 721 898 720Z'/%3E%3Cpath fill='%23F0DBB0' d='M89 717C89 718 85 719 83 719C81 719 77 718 76 718C76 717 78 714 80 714C81 713 86 712 87 713C89 713 90 716 89 717ZM899 714C898 714 897 712 898 711C898 710 900 709 902 709C903 709 905 710 906 711C907 712 906 714 905 714C904 715 900 715 899 714ZM938 738C937 739 934 739 933 738C931 737 929 735 930 734C930 733 933 732 935 732C937 732 939 732 940 734C940 735 939 738 938 738Z'/%3E%3Cpath fill='%233A2419' d='M58 739C57 740 54 740 53 740C51 740 49 738 49 737C49 736 51 734 53 734C54 734 57 734 58 735C59 736 58 738 58 739Z'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
 }
 
 @media (min-width: 700px) {
@@ -139,47 +166,78 @@
 }
 
 @media (min-width: 900px) {
+  .hero {
+    /* How far the art column runs past the container's right edge: into the gutter,
+       short of the screen edge, plus part of the margin outside the 1336px container
+       on wide screens. */
+    --hero-bleed: calc(var(--gutter) - 12px + max(0px, (100vw - 1336px) * .375));
+  }
+
   /* At least the visible viewport below the header, so the story band starts below the
-     fold and its reveals run on tall desktop screens too. */
+     fold and its reveals run on tall desktop screens too. The text column is just wide
+     enough for the H1's first line. */
   .hero__grid {
-    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+    grid-template-columns: minmax(0, calc(var(--hero-h1) * 8.6)) minmax(0, 1fr);
     align-items: center;
-    gap: 48px;
+    gap: 40px;
     min-height: calc(100vh - var(--header-h));
     min-height: calc(100svh - var(--header-h));
-    padding-top: 48px;
+    padding-top: 40px;
     padding-bottom: 64px;
   }
 
-  /* Never taller than the visible viewport below the header: on a short laptop window
-     the whole arch stays above the fold (floor 340px). */
   .hero__art {
-    justify-self: end;
-    width: min(100%, 500px, max(340px, calc((100vh - var(--header-h) - 64px) * 6 / 7)));
-    width: min(100%, 500px, max(340px, calc((100svh - var(--header-h) - 64px) * 6 / 7)));
+    margin: 0 calc(-1 * var(--hero-bleed)) 0 0;
+  }
+
+  .hero__stage::before {
+    width: 153%;
+    transform: translate(-36.5%, -47%);
+  }
+
+  /* Never taller than the visible viewport below the header (less room for the shadow),
+     so on a short laptop window the whole cookie stays above the fold. */
+  .hero__stage {
+    width: min(100%, (100vh - var(--header-h) - 120px) * 2508 / 1922);
+    width: min(100%, (100svh - var(--header-h) - 120px) * 2508 / 1922);
     max-width: none;
-    padding-right: 0;
-  }
-  .hero__plate {
-    right: 0;
-    transform: translate(22px, -22px);
-  }
-  .hero__stamp {
-    right: auto;
-    bottom: 44px;
-    left: -36px;
-    width: 124px;
-    height: 124px;
   }
 }
 
-@media (min-width: 1100px) {
-  .hero__grid {
-    gap: 72px;
+/* ---------- Motion (CSS only; the guards match src/index.css) ---------- */
+
+/* Load: the cookie settles onto its shadow. It is the LCP element, so transform only. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-cookie-in {
+    animation: hero-cookie-settle 1100ms var(--ease-hero) both;
   }
-  .hero__stamp {
-    left: -52px;
-    width: 148px;
-    height: 148px;
+}
+@keyframes hero-cookie-settle {
+  from { transform: translateY(16px) rotate(-6deg) scale(1.04); }
+}
+
+/* The disc grows in under the cookie. Decorative, so scale only; it keeps its resting
+   translate in both keyframes. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__stage::before {
+    animation: hero-disc-in 1100ms var(--ease-hero) both;
   }
+}
+@keyframes hero-disc-in {
+  from { scale: .9; }
+}
+
+/* Exit: as the hero leaves, the cookie turns a few degrees and drifts up off its shadow.
+   animation must come before animation-timeline (the shorthand resets it). */
+@supports (animation-timeline: view()) and (animation-range: entry 0% cover 30%) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-exit-lift {
+      animation: hero-exit-lift linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+@keyframes hero-exit-lift {
+  to { transform: translateY(-6%) rotate(5deg); }
 }
