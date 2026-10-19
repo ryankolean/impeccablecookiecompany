@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
 import { isPlainClick, useMotion } from '../motion/context';
+import type { Page } from '../pages';
 import PillLink from './ui/PillLink';
 import Wordmark from './ui/Wordmark';
 import '../styles/header.css';
@@ -26,10 +27,17 @@ function InstagramIcon() {
   );
 }
 
-// Fixed, solid parchment, exactly var(--header-h) tall with its hairline. Every link is a
-// real #hash link; MotionProvider routes plain ones through scrollToSection, and the
-// menu panel's links close the panel first and then jump.
-export default function Header() {
+// Where a nav item points. On the homepage every link is a real #hash link; MotionProvider
+// routes plain ones through scrollToSection, and the menu panel's links close the panel
+// first and then jump. On the About page they lead back to the homepage sections, and
+// "My story" is the page itself.
+function sectionHref(page: Page, id: string): string {
+  if (page === 'home') return `#${id}`;
+  return id === 'story' ? '/about/' : `/#${id}`;
+}
+
+// Fixed, solid parchment, exactly var(--header-h) tall with its hairline.
+export default function Header({ page = 'home' }: { page?: Page }) {
   const { ready, scrollToSection, setScrollLock } = useMotion();
   const [open, setOpen] = useState(false);
   const [pastHero, setPastHero] = useState(false);
@@ -41,6 +49,8 @@ export default function Header() {
   const releaseRef = useRef<(() => void) | null>(null);
   // Esc and the button send focus back to the button; a link hands it to its target.
   const returnFocus = useRef(true);
+  const orderHref = page === 'home' ? '#order' : '/#order';
+  const current = (id: string) => (page === 'about' && id === 'story' ? 'page' : undefined);
 
   // Order pill state: a butter inner ring once the hero CTA has scrolled away under the
   // header, and aria-current while the order section crosses the middle of the screen.
@@ -150,6 +160,16 @@ export default function Header() {
     };
   }, [open, close, setScrollLock]);
 
+  // Back or forward from another page can restore this one from the back/forward cache
+  // exactly as it was left, menu open and page locked: close it quietly.
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => {
+      if (e.persisted) close(false);
+    };
+    window.addEventListener('pageshow', onShow);
+    return () => window.removeEventListener('pageshow', onShow);
+  }, [close]);
+
   // Lenis can arrive after the menu opened: stop it too, or it would scroll the page under
   // the panel.
   useEffect(() => {
@@ -157,9 +177,15 @@ export default function Header() {
   }, [open, ready, setScrollLock]);
 
   // Panel links: release the page before the jump, so scrollToSection can scroll and
-  // focus the target, then let the panel close behind it.
+  // focus the target, then let the panel close behind it. On the About page there is no
+  // such section: the panel closes quietly and the browser follows the link (to a
+  // homepage section, or for My story to this page again).
   const go = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
-    if (!isPlainClick(e) || !document.getElementById(id)) return;
+    if (!isPlainClick(e)) return;
+    if (!document.getElementById(id)) {
+      close(false);
+      return;
+    }
     e.preventDefault();
     returnFocus.current = false;
     releaseRef.current?.();
@@ -168,9 +194,10 @@ export default function Header() {
   };
 
   // The wordmark and the Order pill stay clickable above the open panel: close it quietly
-  // before their jump lands.
+  // before their jump lands, or before the browser leaves the page (on the About page they
+  // lead to the homepage).
   const onBarClick = (e: MouseEvent<HTMLDivElement>) => {
-    if (!open || !(e.target instanceof Element) || !e.target.closest('a[href^="#"]')) return;
+    if (!open || !(e.target instanceof Element) || !e.target.closest('a[href]')) return;
     returnFocus.current = false;
     releaseRef.current?.();
     setOpen(false);
@@ -179,12 +206,12 @@ export default function Header() {
   return (
     <header ref={headerRef} className="site-header">
       <div className="container site-header__bar" onClickCapture={onBarClick}>
-        <Wordmark />
+        <Wordmark href={page === 'home' ? '#home' : '/'} />
         <nav className="site-nav" aria-label="Main">
           <ul className="site-nav__list" role="list">
             {SECTIONS.map(({ id, label }) => (
               <li key={id}>
-                <a className="site-nav__link" href={`#${id}`}>
+                <a className="site-nav__link" href={sectionHref(page, id)} aria-current={current(id)}>
                   {label}
                 </a>
               </li>
@@ -195,7 +222,7 @@ export default function Header() {
           <InstagramIcon />
         </a>
         <PillLink
-          href="#order"
+          href={orderHref}
           size="header"
           arrow
           className="site-header__order"
@@ -232,13 +259,18 @@ export default function Header() {
           (stopped while it is open) must leave its wheel and touch events alone. */}
       <div id="mobile-menu" ref={panelRef} className="mobile-menu" hidden={!open} data-lenis-prevent>
         <nav className="container mobile-menu__inner" aria-label="Main">
-          <PillLink href="#order" arrow className="mobile-menu__order" onClick={(e) => go(e, 'order')}>
+          <PillLink href={orderHref} arrow className="mobile-menu__order" onClick={(e) => go(e, 'order')}>
             Request an order
           </PillLink>
           <ul className="mobile-menu__list" role="list">
             {SECTIONS.map(({ id, label }) => (
               <li key={id}>
-                <a className="mobile-menu__link font-serif" href={`#${id}`} onClick={(e) => go(e, id)}>
+                <a
+                  className="mobile-menu__link font-serif"
+                  href={sectionHref(page, id)}
+                  aria-current={current(id)}
+                  onClick={(e) => go(e, id)}
+                >
                   {label}
                 </a>
               </li>

@@ -21,21 +21,60 @@
   text-wrap: pretty;
 }
 
-.story__signoff {
-  margin-top: 28px;
-  font-size: 22px;
-  font-style: italic;
-  font-weight: 400;
-  line-height: 1.2;
+/* The three high points: a salt numeral disc with a caramel ring, then the text. */
+.story__points {
+  display: grid;
+  gap: 14px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.story__point {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 12px;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.story__point strong {
+  font-weight: 600;
   color: var(--cocoa);
+}
+.story__num {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-top: -2px;
+  border: 2px solid var(--caramel);
+  border-radius: 50%;
+  background: var(--salt);
+  color: var(--caramel-ink);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* "Read my story": the .link primitive plus a trailing arrow that nudges on hover.
+   Scoped: index.css (the .link primitive) loads after this file. */
+.story .story__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 28px;
+  font-size: 17px;
+}
+.story__more-arrow {
+  flex: none;
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+.story__more:hover .story__more-arrow {
+  transform: translateX(4px);
 }
 
 @media (min-width: 700px) {
   .story {
     padding-block: 104px;
-  }
-  .story__signoff {
-    font-size: 24px;
   }
 }
 
