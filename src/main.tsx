@@ -1,25 +1,32 @@
 import { StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import App from './App.tsx';
-// Imported after App on purpose: the section stylesheets (imported by the components)
-// come first in the bundle, so Tailwind utilities win over them at equal specificity.
+import AboutApp from './AboutApp.tsx';
+// Imported after the pages on purpose: the section stylesheets (imported by the
+// components) come first in the bundle, so Tailwind utilities win over them at equal
+// specificity.
 import './index.css';
 
 const root = document.getElementById('root')!;
-const app = (
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+// One bundle for both pages, so the About page's "Request an order" lands on a homepage
+// whose script is already cached. The prerendered markup says which page this is
+// (dist/about/index.html carries data-page="about"); the dev server serves index.html for
+// every path, so there the URL decides.
+const about = root.firstElementChild
+  ? root.querySelector('[data-page="about"]') !== null
+  : /^\/about\/?$/.test(location.pathname);
+const app = <StrictMode>{about ? <AboutApp /> : <App />}</StrictMode>;
 
 // The production build prerenders the app into #root (scripts/prerender.mjs); the dev
 // server serves an empty #root.
 if (root.firstElementChild) hydrateRoot(root, app);
 else createRoot(root).render(app);
 
-// Newsreader italic 400 only sets below-the-fold accent words. Registered after the load
-// event, so it never competes with the hero photo (the LCP element) or the first paint;
-// until it lands those words show the roman face slanted. Same subset as src/index.css.
+// Newsreader italic 400 only sets accent words below the homepage hero, and the About
+// page's chapter numbers and pull quote, each on a line of its own so the swap reflows
+// nothing (the About H1 uses a swash for this reason). Registered after the load event,
+// so it never competes with the hero photo (the LCP element) or the first paint; until it
+// lands those words show the roman face slanted. Same subset as src/index.css.
 function loadItalic() {
   const italic = new FontFace('Newsreader', "url(/fonts/newsreader-italic-400.woff2) format('woff2')", {
     style: 'italic',

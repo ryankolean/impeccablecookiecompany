@@ -20,6 +20,6 @@ export const flavors: Flavor[] = [
   {
     id: 'snickerdoodle',
     name: 'Snickerdoodle',
-    description: 'The classic, rolled in cinnamon sugar.',
+    description: 'Packed with cinnamon sugar, with a crunchy, sugary outside.',
   },
 ];

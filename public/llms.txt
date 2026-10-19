@@ -2,6 +2,10 @@
 
 > The perfect cookie, made in Michigan. A Michigan home bakery: I bake chocolate chip and snickerdoodle cookies to order in my home kitchen in Michigan, and I sell within Michigan only. There is no checkout: you send a request, I confirm it with you, and you pay only after that.
 
+## My story
+
+I'm Ryan, and I bake every cookie myself. I started baking cookies for my wife, who doesn't like cake, and spent over a year getting the chocolate chip cookie right: brown butter, about half chocolate (Callebaut Belgian dark chocolate plus Toll House chips), and dough rested at least overnight, then frozen and baked fresh for each order. The snickerdoodle is built on the same dough and rolled in cinnamon sugar. The full story: https://impeccablecookie.com/about/
+
 ## How ordering works
 
 1. Send a request with the order form at https://impeccablecookie.com/#order. Pick your cookies and how many. It is a request, not a purchase, so nothing is charged.

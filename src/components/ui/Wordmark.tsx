@@ -6,13 +6,15 @@ const IMPECCABLE = 'm50-137-16-4 1-2h53v2l-18 4-40 131 16 4v2h-54l1-2 18-4zm138 
 type WordmarkProps = {
   // header: cocoa over caramel-ink. reversed: butter over sugar, for cocoa-deep.
   variant?: 'header' | 'reversed';
+  // '#home' on the homepage; '/' from the About page.
+  href?: string;
   className?: string;
 };
 
-export default function Wordmark({ variant = 'header', className }: WordmarkProps) {
+export default function Wordmark({ variant = 'header', href = '#home', className }: WordmarkProps) {
   const classes = ['wordmark', variant === 'reversed' && 'wordmark--reversed', className].filter(Boolean).join(' ');
   return (
-    <a className={classes} href="#home" aria-label="Impeccable Cookie Company, back to top">
+    <a className={classes} href={href} aria-label={href === '#home' ? 'Impeccable Cookie Company, back to top' : 'Impeccable Cookie Company, home'}>
       <svg className="wordmark__main" viewBox="-8 -149 904 195" aria-hidden="true" focusable="false">
         <path fill="currentColor" d={IMPECCABLE} />
       </svg>

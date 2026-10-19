@@ -10,7 +10,11 @@ npm run lint
 npm run typecheck
 ```
 
-`npm run build` also prerenders: it runs `vite build`, then `vite build --ssr src/entry-server.tsx --outDir dist-ssr`, then `scripts/prerender.mjs` writes the rendered app into `dist/index.html` and deletes `dist-ssr`. Components must not read `window`, `matchMedia`, storage, `Date` or `Math.random` while rendering; do that in effects.
+`npm run build` also prerenders: it runs `vite build`, then `vite build --ssr src/entry-server.tsx --outDir dist-ssr`, then `scripts/prerender.mjs` writes the rendered pages into `dist/index.html` and `dist/about/index.html` and deletes `dist-ssr`. Components must not read `window`, `matchMedia`, storage, `Date` or `Math.random` while rendering; do that in effects.
+
+## Pages
+
+Two prerendered pages share one bundle: `/` (`src/App.tsx`) and `/about/` (`src/AboutApp.tsx`, copy in `src/components/About.tsx`). `src/main.tsx` hydrates the About tree when the markup carries `data-page="about"` (on the dev server, which serves `index.html` for every path, when the path is `/about/`). `scripts/prerender.mjs` builds the About head from the same template: its own title, description, canonical and Open Graph and Twitter URL and text, and no hero image preload. Each replacement must match exactly once or the build fails. It also strips the template's HTML comments, never the app markup's (React's hydration markers). `Header` and `Footer` take `page="about"`: their links lead back to the homepage sections (`/#cookies`, `/#order`), the wordmark to `/`, and "My story" is `aria-current="page"`. A new page also goes in `public/sitemap.xml` and `public/llms.txt`.
 
 ## Hero image
 
@@ -43,5 +47,13 @@ Motion is a progressive layer: the built HTML is complete and visible without JS
   |---|---|---|---|---|---|---|---|---|---|
   | main (7faef8e) | 99 | 100 | 100 | 100 | 1.83 s | 1.36 s | 0 ms | 0 | 238 KiB |
   | Hero cutout + step cards | 99 | 100 | 100 | 100 | 1.68 s | 1.36 s | 0 ms | 0 | 236 KiB |
+
+- About page and story high points, 2026-10-19: same method. The homepage carries the About component and `about.css` in the shared bundle (+2.6 KiB), and its HTML is 0.1 KB smaller (template comments stripped).
+
+  | Build | Performance | Accessibility | Best practices | SEO | LCP | FCP | TBT | CLS | Weight |
+  |---|---|---|---|---|---|---|---|---|---|
+  | main (556087f), homepage | 99 | 100 | 100 | 100 | 1.68 s | 1.36 s | 0 ms | 0 | 235 KiB |
+  | This change, homepage | 99 | 100 | 100 | 100 | 1.68 s | 1.37 s | 0 ms | 0 | 238 KiB |
+  | This change, /about/ | 100 | 100 | 100 | 100 | 1.51 s | 1.36 s | 0 ms | 0 | 202 KiB |
 
 - **Keep `dist/index.html` under about 14 KB gzip**, one TCP initial window. At 14.9 KB the page took an extra round trip and Lighthouse mobile read 300 ms worse on both FCP and LCP. Decorative drawings that need no animation go in CSS as `data:` SVG backgrounds (the hero crumbs, the order chapter's pin, sparks, loop, heart and corner cookie), not inline SVG.

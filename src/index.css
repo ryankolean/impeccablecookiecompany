@@ -1,7 +1,8 @@
 /* Self-hosted latin subsets from Google Fonts (OFL, see public/fonts/OFL.txt).
-   Only Newsreader 500 is preloaded (index.html). Newsreader italic 400 sets only
-   below-the-fold accent words, so it has no @font-face here: src/main.tsx registers it
-   after the load event, keeping it out of the first-paint fetch set. */
+   Only Newsreader 500 is preloaded (index.html). Newsreader italic 400 sets only accent
+   words that can swap late without reflowing a first screen, so it has no @font-face
+   here: src/main.tsx registers it after the load event, keeping it out of the
+   first-paint fetch set. */
 @font-face {
   font-family: 'Newsreader';
   font-style: normal;

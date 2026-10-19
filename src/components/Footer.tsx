@@ -1,14 +1,15 @@
+import type { Page } from '../pages';
 import Wordmark from './ui/Wordmark';
 import '../styles/footer.css';
 
 // Cocoa-deep band. .surface-dark gives the butter focus ring and sugar eyebrows.
 // No address, map, phone or Google share link: the owner's home must not be findable.
-export default function Footer() {
+export default function Footer({ page = 'home' }: { page?: Page }) {
   return (
     <footer className="site-footer surface-dark">
       <div className="container site-footer__grid">
         <div className="site-footer__brand">
-          <Wordmark variant="reversed" />
+          <Wordmark variant="reversed" href={page === 'home' ? '#home' : '/'} />
           <p className="site-footer__notice">
             Made in a home kitchen that has not been inspected by the Michigan Department of Agriculture and Rural
             Development.
