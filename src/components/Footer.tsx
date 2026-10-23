@@ -44,7 +44,12 @@ export default function Footer({ page = 'home' }: { page?: Page }) {
           </ul>
         </div>
 
-        <p className="site-footer__copy">{`© ${__BUILD_YEAR__} Impeccable Cookie Company`}</p>
+        <div className="site-footer__copy">
+          <p>{`© ${__BUILD_YEAR__} Impeccable Cookie Company`}</p>
+          <p className="site-footer__credit">
+            Website by <a href="https://summitsoftwaresolutions.dev/work/impeccable-cookie">Summit Software Solutions</a>
+          </p>
+        </div>
       </div>
     </footer>
   );
