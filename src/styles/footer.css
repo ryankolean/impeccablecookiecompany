@@ -62,7 +62,23 @@
 
 .site-footer__copy {
   grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 24px;
   margin-top: 8px;
   padding-top: 22px;
   border-top: 1px solid rgba(245, 230, 188, .18);
+}
+
+/* Builder credit: quieter than the contact links, so cream-muted with a faint underline. */
+.site-footer__credit a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(245, 230, 188, .35);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur-micro) ease;
+}
+.site-footer__credit a:hover {
+  text-decoration-color: currentColor;
 }
